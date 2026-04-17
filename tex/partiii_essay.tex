@@ -1,0 +1,423 @@
+% Template for Part III essays 2024/25 (12.02.2025)
+% Authors: Mycroft Rosca-Mead, Matt Colbrook, Jonathan Evans.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% The following few lines are preliminaries and MUST NOT BE EDITED
+\documentclass[11pt, titlepage]{article} % DO NOT CHANGE THE FONT SIZE
+\usepackage[left=2.2cm,right=2.2cm,top=2.5cm,bottom=2.5cm]{geometry} % DO NOT CHANGE THE MARGINS
+\usepackage{amsfonts,amssymb,amsthm,amsmath,amscd}
+\usepackage{bm,bbm}
+\usepackage{enumerate}
+\usepackage{parskip}
+\usepackage{tikz}
+\usepackage{todonotes}
+\usepackage{setspace}
+\setstretch{1.2}
+\newcommand{\ecn}{\author}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% ESSAY TITLE
+% Your essay title should match the title given in the essay booklet.
+% If you wish to give the essay your own subtitle, you can do this after the title page (e.g. using \section*{Subtitle Name}).
+% You do not need to use \Author and YOU SHOULD NOT INCLUDE YOUR NAME OR COLLEGE ANYWHERE IN THIS ESSAY.
+% The title page does not count towards the total page number.
+% You will be assigned an Essay Candidate Number (ECN) at the beginning of Easter Term.
+\title{Robust Estimation of Graph Statistics}
+\ecn{E123X}
+
+% DATE
+%To remove the date from the front page of the final version, UNCOMMENT the line below.
+\date{}
+
+% FONTS
+\renewcommand{\familydefault}{\sfdefault}
+% YOU MUST USE EITHER THE SANS-SERIF FONT DEFINED BY THE COMMAND ABOVE OR THE STANDARD LaTeX (computer modern) FONT THAT CAN BE OBTAINED BY COMMENTING OUT THE LINE ABOVE. YOU MUST NOT USE ANY OTHER FONT.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% A guide to using LaTeX can be found online at https://www.overleaf.com/learn/latex/Learn_LaTeX_in_30_minutes.
+% A shorter LaTeX cheat sheet can be found at https://wch.github.io/latexsheet/.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Some latex tips:
+
+% Use this space for any special macros or packages you need.
+\usepackage{graphicx}
+
+% use this package for easy referencing:
+\usepackage[capitalise,noabbrev]{cleveref} % e.g., \cref{amazing_theorem} will reference "`Theorem"' X without having to keep track of theorems, equations etc and typing "`Theorem"'
+\usepackage{overpic} % use this package for easy labelling of figures
+\usepackage{url} % use this package to reference urls, e.g., \url{https://www.maths.cam.ac.uk/postgrad/part-iii/prospective.html}
+\usepackage{comment} % use this package to comment things out \begin{comment} blah \end{comment}
+
+% FIGURES
+% Here is an example of how to do figures:
+
+%\begin{figure}
+%\centering
+%\includegraphics[width=\linewidth]{CMS at night_0.jpg}
+%\caption{The CMS at night.}\label{fig:cms}
+%\end{figure}
+
+% General tip: Many tex problems can be easily solved by a quick and specific google search.
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%FOOTNOTES
+\newcommand\blfootnote[1]{% avoids footnotes spilling over
+  \begingroup
+  \renewcommand\thefootnote{}\footnote{#1}%
+  \addtocounter{footnote}{-1}%
+  \endgroup
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% The following relate to equations, theorems, etc, as illustarted in the document. 
+
+\numberwithin{equation}{section}
+% EQUATION NUMBERING: The command above can be changed to number equations within subsections, rather than sections, or it can be commented out to number equations through the document, irrespective of (sub)sections.
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}{Lemma}
+\newtheorem{corollary}{Corollary}
+\newtheorem{proposition}{Proposition}
+\newtheorem{definition}{Definition}
+\theoremstyle{definition}
+\newtheorem{remark}{Remark}
+\newtheorem{example}{Example}
+\newtheorem{algorithm}{Algorithm}
+
+\numberwithin{theorem}{section}
+\numberwithin{lemma}{section}
+\numberwithin{corollary}{section}
+\numberwithin{proposition}{section}
+\numberwithin{definition}{section}
+\numberwithin{remark}{section}
+% NUMBERING OF THEOREMS ETC: The commands above can be changed to number within subsections, rather than sections, or commented out to number them through the document, irrespective of (sub)sections.
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\begin{document}
+\maketitle
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% START WRITING YOUR ESSAY HERE
+\section{Introduction}
+\subsection{Background}
+\subsection{Structure of this paper}
+\subsection{Notations}
+\begin{definition}
+A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community stochastic block model graph
+with $V = [n]$ and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$.
+For each pair of vertices $i, j \in [n]$, we have
+\[\mathbb{P}((i,j) \in E) = \begin{cases}
+\frac{d}{n}(1+\frac{\epsilon}{2}) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}) & \text{if } x_i \neq x_j.
+\end{cases}\] 
+\end{definition}
+\begin{definition}
+The set of positive semidefinite matrices with diagonal entries equal to $1$ is denoted by
+\[\mathcal{PSD}_1(n) = \{\bm{X} \in \mathbb{R}^{n \times n} : \bm{X} \succeq 0, \bm{X}_{ii} = 1 \text{ for all } i \in [n]\}.\]
+\end{definition}
+\begin{definition}
+Given a matrix $\bm{M} \in \mathbb{R}^{n \times n}$, we define $\mathcal{SDP}(\bm{M}) := \max_{\bm{X} \in \mathcal{PSD}_1(n)} \langle \bm{M}, \bm{X} \rangle$.
+\end{definition}
+\begin{definition}
+Given a graph $G$, let $\bm{A}_G$ be its adjacency matrix, and define $\bm{A}_G^{\mathrm{cent}} = \bm{A}_G - \mathbb{E}[\bm{A}_G]$.
+For $G \sim \mathcal{G}(n, d, \epsilon)$, we have $\mathbb{E}[\bm{A}_G] = \frac{d}{n}\bm{1}\bm{1}^\top$.
+\end{definition}
+
+\section{(Looking at MS16)}
+\todo{introduce MS16}
+\subsection{Algorithm}
+\begin{algorithm}[SDP Algorithm from \cite{MS16}]
+\label{alg:MS16}
+\leavevmode
+\begin{enumerate}
+    \item Sample edges of $G$ independently with probability $(1 + n^{-1/2})^{-1}$ to obtain the sampled edge set $E_\mathrm{sample} \subset E$, and then compute the evaluation edge set $E_\mathrm{eval} = E \setminus E_\mathrm{sample}$.
+    \item Construct the subgraphs $G_\mathrm{sample} = (V, E_\mathrm{sample})$ and $G_\mathrm{eval} = (V, E_\mathrm{eval})$.
+    \item Compute an optimiser $\bm{X}^*$ of $\mathcal{SDP}(\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}})$, i.e., $\langle \bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}, \bm{X}^* \rangle = \mathcal{SDP}(\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}})$.
+    \item Compute the eigenvectors $\bm{v}^{(1)}, \ldots, \bm{v}^{(n)}$ of $\bm{X}^*$.
+    \item For each $i,j \in [n]$, define $\hat{\bm{x}}^{(i,j)} \in \{-1, 0, 1\}^{n}$ as follows:
+    \[\hat{\bm{x}}^{(i,j)}_k = \begin{cases}
+      \operatorname{sign}(\bm{v}^{(i)}_k) & \text{if } |\bm{v}^{(i)}_k| \geq |\bm{v}^{(i)}_j|, \\
+      0 & \text{otherwise}.
+    \end{cases}\]
+    \label{alg:MS16.rounding}
+    \item Find $(i^*, j^*) = \arg\max_{i,j \in [n]} (\hat{\bm{x}}^{(i,j)})^\top \bm{A}_{G_\mathrm{eval}}^{\mathrm{cent}} \hat{\bm{x}}^{(i,j)} = \sum_{a,b \in E_\mathrm{eval}}\hat{\bm{x}}^{(i,j)}_a \cdot \hat{\bm{x}}^{(i,j)}_b$.
+    \label{alg:MS16.selection}
+    \item Output $\hat{\bm{x}}^\mathrm{SDP}(G) = \hat{\bm{x}}^{(i^*,j^*)}$.
+\end{enumerate}
+\end{algorithm}
+We have the following weak recovery rate guarantee for Algorithm \ref{alg:MS16}.
+\begin{theorem}[Weak Recovery for Algorithm \ref{alg:MS16}]\label{thm:MS16.recovery}
+Let $G \sim \mathcal{G}(n, d, \epsilon)$ and assume, for some $\delta > 0$, that $\lambda = \epsilon\sqrt{d}/2 \geq 1 + \delta$.
+Then, there exists $\eta = \eta(\delta) > 0$ and $d_* = d_*(\delta) > 0$ such that, for all $d \geq d_*$,
+the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfies
+\[\mathbb{P}\left(\frac{1}{n} |\langle \hat{\bm{x}}^\mathrm{SDP}(G), x \rangle| \geq \eta \right) \geq 1 - Ce^{-\sqrt{n}/C}.\]
+\end{theorem}
+\todo{discuss robustness of the algorithm}
+
+\subsection{Proof of Weak Recovery (Theorem \ref{thm:MS16.recovery})}
+\todo{introduce the proof strategy}
+Let $\bm{x}$ be the label vector of $G \sim \mathcal{G}(n, d, \epsilon)$. Note that $G_\mathrm{sample} \sim \mathcal{G}(n, d_\mathrm{sample}, \epsilon)$, 
+and $G_\mathrm{eval} \sim \mathcal{G}(n, d_\mathrm{eval}, \epsilon)$, where $d_\mathrm{sample} = d/(1 + n^{-1/2})$ and $d_\mathrm{eval} = n^{-1/2}d_\mathrm{sample}$.
+For simplicity, from now on we write $d = d_\mathrm{sample}$.
+\todo{investigate independence}
+
+\subsubsection{Step 1: $\bm{X}^*$ contains nontrivial information about $\bm{x}$}
+We first introduce a group of Gaussian random matrices (GOEs) that have well-behaved SDP values.
+\begin{definition}[Gaussian orthogonal ensemble (GOE) and the deformed GOE $\bm{B}(\lambda)$]
+\label{def:GOE}
+A random matrix $\bm{W} \in \mathbb{R}^{n \times n}$ is a \emph{GOE matrix} 
+if it is a symmetric matrix with $\{\bm{W}_{ij}\}_{i \leq j}$ independent
+and $\bm{W}_{ij} \sim \mathcal{N}(0, 1/n)$ for $i < j$ and $\bm{W}_{ii} \sim \mathcal{N}(0, 2/n)$. 
+The \emph{deformed GOE matrix} $\bm{B}(\lambda)$ is then defined as \[\bm{B}(\lambda) = \frac{\lambda}{n} \bm{1}\bm{1}^\top + \bm{W}.\]
+\end{definition}
+
+We then have the following phase transition result for the SDP value of $\bm{B}(\lambda)$.
+\begin{lemma}[SDP value of $\bm{B}(\lambda)$, Theorem 5 of \cite{MS16}]
+\label{lem:GOE.SDP}
+Let $\bm{B}(\lambda)$ be a deformed GOE matrix defined in \cref{def:GOE}. Then, with probability converging to 1 as $n \to \infty$,
+\begin{itemize}
+\item[(a)] if $\lambda \leq 1$: for any $\epsilon > 0$, we have 
+$\mathcal{SDP}(\bm{B}(\lambda)) / n \in [2 - \epsilon, 2 + \epsilon]$.
+\item[(b)] if $\lambda > 1$: there exists $\Delta(\lambda) > 0$ such that 
+$\mathcal{SDP}(\bm{B}(\lambda)) / n \geq 2 + \Delta(\lambda)$.
+\end{itemize}
+\end{lemma}
+
+If we set the diagonal entries of $\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}$ to be $\lambda \sqrt{d}/n$, then 
+\[\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}} = \frac{\lambda}{n} \bm{x}\bm{x}^\top + \bm{E},\]
+where $\bm{E}$ is a symmetric matrix with zero diagonal and independent off-diagonal entries satisfying
+\[\bm{E}_{ij} = \begin{cases}
+  \frac{1}{\sqrt{d}} - \frac{\sqrt{d}}{n} - \frac{\lambda}{n} \bm{x}_i\bm{x}_j & \text{with probability } \mathbb{P}((i,j) \in E_\mathrm{sample}), \\
+  -\frac{\sqrt{d}}{n} - \frac{\lambda}{n} \bm{x}_i\bm{x}_j & \text{with probability } 1 - \mathbb{P}((i,j) \in E_\mathrm{sample}).
+\end{cases}\]
+Let $\bm{X}^*$ be an optimizer of $\mathcal{SDP}(\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}})$. We will now try to bound $\langle \bm{E}, \bm{X}^* \rangle$ and $\langle \frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}, \bm{X}^* \rangle$
+away from each other using the phase transition result of \cref{lem:GOE.SDP}, which will then give us 
+a lower bound on $n^{-2} \langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle$, 
+which is the correlation between $\bm{X}^*$ and the ground truth labels matrix $\bm{x}\bm{x}^\top$.
+
+The following lemma bounds $\mathcal{SDP}(\bm{E})$ to the SDP value of a GOE matrix.
+\begin{lemma}[GOE approximation of $\mathcal{SDP}(\bm{E})$]
+\label{lem:SDP.approx1}
+Let $\bm{W}$ be a GOE matrix. Then, there exists $C = C(\lambda) > 0$ such that, for all $n \geq n_0 (d, \epsilon)$
+with probability at least $1 - Ce^{-n/C}$, we have
+\[
+\left|\frac{1}{n} \mathcal{SDP}(\bm{E}) - \frac{1}{n} \mathcal{SDP}(\bm{W})\right| \leq \frac{C\log(d)}{d^{1/10}}.
+\]
+Moreover, $C(\lambda)$ is bounded for $\lambda$ in any compact set.
+\end{lemma}
+
+We also have a similar result bounding $\mathcal{SDP}(\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}/\sqrt{d})$
+by the SDP value of a deformed GOE matrix.
+\begin{lemma}[Deformed GOE approximation of $\mathcal{SDP}(\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}/\sqrt{d})$]
+\label{lem:SDP.approx2}
+Let $\bm{B}(\lambda)$ be a deformed GOE matrix. Then, there exists $C = C(\lambda) > 0$ such that, for all $n \geq n_0 (d, \epsilon)$
+\[
+\left|\frac{1}{n} \mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}\right) - \frac{1}{n} \mathcal{SDP}(\bm{B}(\lambda))\right| \leq \frac{C\log(d)}{d^{1/10}}.
+\]
+Moreover, $C(\lambda)$ is bounded for $\lambda$ in any compact set.
+\end{lemma}
+
+Now we have the tools to obtain a lower bound on $n^{-2} \langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle$.
+\begin{align*}
+\left\langle \frac{\lambda}{n^2} \bm{x}\bm{x}^\top, \bm{X}^* \right\rangle & 
+= \frac{1}{n}\left(\left\langle \frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}, \bm{X}^* \right\rangle - \left\langle \bm{E}, \bm{X}^* \right\rangle\right)\\
+& = \frac{1}{n}\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}\right) - \frac{1}{n}\left\langle \bm{E}, \bm{X}^* \right\rangle\\
+& \geq \frac{1}{n}\mathcal{SDP}(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}) - \frac{1}{n}\mathcal{SDP}(\bm{E})
+&& \text{by optimality of SDP}\\
+& \geq \frac{1}{n}\mathcal{SDP}(\bm{B}(\lambda)) - \frac{1}{n}\mathcal{SDP}(\bm{W}) - \frac{C\log(d)}{d^{1/10}}
+&& \text{by Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}}\\
+& \geq \Delta_1(\lambda) - \frac{C\log(d)}{d^{1/10}},
+&& \text{by Lemma \ref{lem:GOE.SDP}}
+\end{align*}
+with probability at least $1 - Cn^{-4}$ (see the remark below).
+\begin{remark}
+In the original paper \cite{MS16}, the authors claimed that the above inequality holds with probability at least $1 - Ce^{-n/C}$, 
+but tracking the proof of Lemma \ref{lem:GOE.SDP} (Appendices F and G of \cite{MS16}) shows that 
+they only proved the result with probability at least $1 - Cn^{-4}$ (Lemma G.8 of \cite{MS16}).
+This is still sufficient for our purposes, as the probability still tends to 1 as $n \to \infty$.
+\end{remark}
+Now fix $\lambda$, and take $d$ sufficiently large such that $\Delta_1(\lambda) - \frac{C\log(d)}{d^{1/10}} \geq \lambda \Delta_2(\lambda) > 0$.
+Then, we have, with probability at least $1 - Cn^{-4}$,
+\[n^{-2}\langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle \geq \Delta_2(\lambda).\]
+This is an important milestone, as it shows that $\bm{X}^*$ has a nontrivial correlation with the ground truth $\bm{x}\bm{x}^\top$.
+
+\subsubsection{Step 2: There exists a good label estimator among $\{\hat{\bm{x}}^{(i,j)}\}_{i,j \in [n]}$}
+We first define the following rounding function used in step \ref{alg:MS16.rounding} of \cref{alg:MS16}:
+\begin{definition}[Rounding function]
+For $t \geq 0$, define the \emph{rounding function} $r_t: \mathbb{R} \to \{-1, 0, +1\}$ as follows:
+\[r_t(x) = 
+\begin{cases}
+1 & \text{if } x \geq t,\\
+0 & \text{if } -t < x < t,\\
+-1 & \text{if } x \leq -t.
+\end{cases}
+\]
+\end{definition}
+Hence, we can write $\hat{\bm{x}}^{(\hat{\imath}, j)} = r_{\bm{v}^{(\hat{\imath})}_j}(\bm{v}^{(\hat{\imath})})$.
+
+Since $\bm{X} \in \mathcal{PSD}_1(n)$, writing its eigen-decomposition as $\bm{X} = \sum_{i=1}^{n} \xi_i \bm{v}^{(i)} (\bm{v}^{(i)})^\top$,
+where $\xi_i$ is the $i$-th largest eigenvalue, and $\bm{v}^{(i)}$ is the corresponding unit length eigenvector, 
+we have $\xi_i \geq 0$ for all $i$ by positive semidefiniteness, and $\sum_{i=1}^{n} \xi_i = \operatorname{Tr}(\bm{X}) = n$. Thus,
+\[
+\Delta_2 (\lambda) \leq \frac{1}{n^2} \langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle 
+= \frac{1}{n^2} \sum_{i=1}^{n} \xi_i (\bm{x}^\top \bm{v}^{(i)})^2
+= \sum_{i=1}^{n} \frac{\xi_i}{n} \cdot \left(\frac{\bm{x}^\top \bm{v}^{(i)}}{\sqrt{n}}\right)^2.
+\]
+So there exists $\hat{\imath} \in [n]$ such that $|\bm{x}^\top \bm{v}^{(\hat{\imath})}| \geq \sqrt{n\Delta_2(\lambda)}$.
+
+Next, we will use following lemma to justify that the rounding function
+preserves this correlation, which shows that it is possible to extract a good label estimator.
+\begin{lemma}[Rounding Lemma]
+\label{lem:rounding}
+Let $X$, $Y$ be random variables such that: $\mathbb{P}(X = +1) = \mathbb{P}(X = -1) = 1/2$, 
+$\mathbb{E}(XY)\geq \epsilon > 0$, and $\mathbb{E}(Y^2) = 1$. Then, there exists $t^*$ depending 
+on the joint distribution of $X$ and $Y$, such that
+\[
+\mathbb{E}(X r_{t^*}(Y)) \geq \frac{\epsilon^2}{2}.
+\]
+\end{lemma}
+\begin{proof}
+Note that for all $t$, we have $X r_t(Y) = r_t(XY)$, and $Y^2 = (XY)^2$. Let $Z = XY$, then it suffices to show
+that given $\mathbb{E}(Z) \geq \epsilon > 0$ and $\mathbb{E}(Z^2) = 1$, we have $\mathbb{E}(r_t(Z)) \geq \epsilon^2/2$.
+Recall that for nonnegative random variable $S$, by Fubini, we have
+\[
+\mathbb{E}(S) = \mathbb{E}\left(\int_{0}^{\infty}\mathbbm{1}_{s\leq S}ds\right) = \int_{0}^{\infty}\mathbb{P}(S\geq s)ds,\quad
+\mathbb{E}(S^2) = \mathbb{E}\left(\int_{0}^{\infty}2s\mathbbm{1}_{s\leq S}ds\right) = \int_{0}^{\infty}2s\mathbb{P}(S\geq s)ds.
+\]
+Therefore, writing $Z^\pm = \max(\pm Z, 0)$, we have
+\begin{align*}
+\epsilon & \leq \mathbb{E} (Z) = \mathbb{E} (Z_+) - \mathbb{E} (Z_-) = \int_{0}^{\infty} \mathbb{P}(Z_+\geq z) dz - \int_{0}^{\infty} \mathbb{P}(Z_-\geq z) dz\\
+& \leq \int_{0}^{K} (\mathbb{P}(Z\geq z) - \mathbb{P}(Z\leq -z))dz + \int_{K}^{\infty} \frac{2z}{2K} \mathbb{P}(Z\geq z) dz - \int_{K}^{\infty} \frac{2z}{2K} \mathbb{P}(-Z\geq z) dz\\
+& = \int_{0}^{K} \mathbb{E}{r_t(Z)}dt + \frac{1}{2K}\mathbb{E}(Z_+^2 - Z_-^2) = \int_{0}^{K} \mathbb{E}{r_t(Z)}dt + \frac{1}{2K}.
+\end{align*}
+Now take $K = 1/\epsilon$, then
+\[
+\frac{1}{K}\int_{0}^{K} \mathbb{E}{r_t(Z)}dt \geq \frac{1}{K}(\epsilon - \frac{1}{2K}) = \frac{\epsilon^2}{2}
+\]
+So the average of $\mathbb{E}{r_t(Z)}$ over $t\in [0, 1/\epsilon]$ is greater than $\epsilon^2/2$,
+so there exists $t^* \in [0, 1/\epsilon]$ such that $\mathbb{E}{r_{t^*}(Z)} \geq \epsilon^2/2$.
+\end{proof}
+
+Without loss of generality, assume that $\bm{x}^\top \bm{v}^{(\hat{\imath})} > 0$. Consider $(X, Y)$ drawn uniformly from \\
+$\{(\bm{x}_k, \sqrt{n}\bm{v}^{(\hat{\imath})}_k)\}_{k \in [n]}$, then
+we have $\mathbb{E}(XY) = n^{-1/2} \bm{x}^\top \bm{v}^{(\hat{\imath})} \geq \sqrt{\Delta_2(\lambda)}$
+and $\mathbb{E}(Y^2) = n^{-1} || \sqrt{n}\bm{v}^{(\hat{\imath})} ||^2 = || \bm{v}^{(\hat{\imath})} ||^2 = 1.$
+Thus, by \cref{lem:rounding}, there exists $t^* \in [0, 1/\sqrt{\Delta_2(\lambda)}]$ such that
+\[
+\frac{\Delta_2(\lambda)}{2} \leq \mathbb{E}(X r_{t^*}(Y))
+= \frac{1}{n} \sum_{k=1}^{n} \bm{x}_k r_{t^*}(\sqrt{n}\bm{v}^{(\hat{\imath})}_k)
+= \frac{1}{n} \langle \bm{x}, r_{\tilde{t}}(\bm{v}^{(\hat{\imath})}) \rangle,
+\]
+where $\tilde{t} = t^*/\sqrt{n} \in [0, 1/\sqrt{n\Delta_2(\lambda)}]$. 
+\begin{remark}
+Here, we slightly improved the rounding lemma bound from $\epsilon^2/4$ in \cite{MS16} to $\epsilon^2/2$,
+although the main proof idea remains the same. Also, the original application of the rounding lemma
+missed the scaling factor $\sqrt{n}$ in the definition of $Y$, but the conclusion remains valid.
+\end{remark}
+Finally, note that for any value of $\tilde{t}$, we can find $\hat{\jmath} \in [n]$ such that 
+$r_{\tilde{t}}(\bm{v}^{(\hat{\imath})}) = r_{\bm{v}^{(\hat{\imath})}_{\hat{\jmath}}}(\bm{v}^{(\hat{\imath})}) = \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}$.
+Therefore, there exists some $\hat{\imath}, \hat{\jmath} \in [n]$ such that
+\[
+\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle \geq \frac{\Delta_2(\lambda)}{2}.
+\]
+
+Now, it remains to show that the selection step (Step \ref{alg:MS16.selection}) of \cref{alg:MS16}
+will find such $\hat{\imath}, \hat{\jmath}$ with high probability, which will then complete the proof of Theorem \ref{thm:MS16.recovery}.
+
+\subsubsection{Step 3: The evaluation edge set gives a good estimator}
+Recall the well-known Azuma-Hoeffding inequality.\todo{add reference}
+\begin{lemma}[Azuma-Hoeffding inequality]
+\label{lem:A-H}
+Let $X_0, \ldots, X_m$ be a martingale, with bounded increments,
+i.e. $|X_i - X_{i-1}| \leq c_i$ for all $i \in [m]$. Then, for all $t > 0$, we have
+\[
+\mathbb{P}(|X_m - \mathbb{E}(X_m)| \geq t) \leq 2\exp\left(-\frac{2t^2}{\sum_{i=1}^{m} c_i^2}\right).
+\]
+\end{lemma}
+We apply this inequality to the objective function in Step \ref{alg:MS16.selection} of \cref{alg:MS16}, 
+and obtain the following concentration result.
+\begin{lemma}
+\label{lem:conc}
+Let $G \sim \mathcal{G}(n, d, \epsilon)$. For any fixed vector $\hat{\bm{x}} \in \{-1, 0, +1\}^n$, 
+define $f(G; \hat{\bm{x}}) = \hat{\bm{x}}^\top \bm{A}_{G}^{\mathrm{cent}} \hat{\bm{x}}.$
+Then, for any $t > 0$,
+\[
+\mathbb{P}\Bigl(
+    \bigl|f(G; \hat{\bm{x}})-\mathbb{E}(f(G; \hat{\bm{x}}))\bigr|
+    \ge t
+    \;\Bigm|\;
+    |E_{\mathrm{eval}}| \le m
+\Bigr) \leq 2 \exp\left(-\frac{t^2}{8m}\right).
+\]
+\end{lemma}
+\begin{proof}
+Note that $f(G; \hat{\bm{x}}) = \hat{\bm{x}}^\top \bm{A}_{G}^{\mathrm{cent}} \hat{\bm{x}}
+= \hat{\bm{x}}^\top \bm{A}_{G} \hat{\bm{x}} - (d/n) (\hat{\bm{x}}^\top \bm{1})^2$,
+so writing $\tilde{f}(G; \hat{\bm{x}}) = \hat{\bm{x}}^\top \bm{A}_{G} \hat{\bm{x}}$,
+we have $f(G; \hat{\bm{x}}) - \mathbb{E}(f(G; \hat{\bm{x}})) = \tilde{f}(G; \hat{\bm{x}}) - \mathbb{E}(\tilde{f}(G; \hat{\bm{x}}))$.
+Note that $\tilde{f}(G; \hat{\bm{x}}) = \sum_{(a,b) \in E} 2\hat{\bm{x}}_a \hat{\bm{x}}_b$.
+
+For some ordering of all possible edges, we can define a filtration $\mathcal{F}_0, \mathcal{F}_1, \ldots, \mathcal{F}_m$
+with $\mathcal{F}_k = \sigma(E_1, \ldots, E_k)$, where $E_k \in E(G) \cup \varnothing$ is the $k$-th edge of $G$ in the ordering. 
+Then, define the martingale $X_k = \mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | \mathcal{F}_k)$ for $k \in [m]$. 
+Since $|E(G)| \leq m$, we have $X_m = \tilde{f}(G; \hat{\bm{x}})$. Note that for all $k \in [m]$, we have
+\begin{align*}
+|X_k - X_{k-1}| &= \left|\mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k}) - \mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k-1})\right|\\
+& \leq \sup_{e_{1:k-1}, e_k, e_k'} \left|\mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k-1} = e_{1:k-1}, E_k = e_k) 
+- \mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k-1} = e_{1:k-1}, E_k = e_k')\right|\\
+& \leq \sup_{E(G^+) = E(G) \cup \{(a,b)\}} \left|\tilde{f}(G^+; \hat{\bm{x}}) - \tilde{f}(G; \hat{\bm{x}})\right|\\
+& \leq |2\hat{\bm{x}}_a \hat{\bm{x}}_b| \leq 2.
+\end{align*}
+Hence, we can apply the Azuma-Hoeffding inequality \cref{lem:A-H} to $X$ with $c_i = 2$ for all $i \in [m]$ to obtain
+\begin{align*}
+\mathbb{P}\Bigl(
+    \bigl|f(G; \hat{\bm{x}})-\mathbb{E}(f(G; \hat{\bm{x}}))\bigr|
+    \ge t
+    \;\Bigm|\;
+    |E(G)| \le m
+\Bigr)
+&= \mathbb{P}\Bigl(
+    \bigl|\tilde{f}(G; \hat{\bm{x}})-\mathbb{E}(\tilde{f}(G; \hat{\bm{x}}))\bigr|
+    \ge t
+    \;\Bigm|\;
+    |E(G)| \le m
+\Bigr)\\
+&= \mathbb{P}(|X_m - \mathbb{E}(X_m)| \geq t)\\
+&\leq 2\exp\left(-\frac{t^2}{8m}\right).
+\end{align*}
+as desired.
+\end{proof}
+Now, since $|E_\mathrm{eval}| \sim \operatorname{Binomial}(\binom{n}{2}, n^{-1/2}/(1 + n^{-1/2}))$,
+we have 
+
+
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%                                                                             
+% REFERENCES
+%                                                                             
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+% List any references you have used below. You can list papers in your preferred style, e.g. as below.
+% To cite a paper in your text, use \cite{}.
+
+% If you prefer, you can list your papers in a separate .bib file. This is often much more efficient and easier to change later.
+% An explanation of how to do this can be found at https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex.
+% When submitting the essay, you must upload your .bib file alongside this .tex file.
+
+\bibliographystyle{alpha}
+\begin{thebibliography}{99}
+\bibitem[MS16]{MS16}
+Montanari, A. and Sen, S. (2015) \emph{Semidefinite Programs on Sparse Random Graphs and their Application to Community Detection}, Proceedings of the forty-eighth annual ACM symposium on Theory of Computing, 2016, pp. 814–827.
+\bibitem{examplebib}
+Author (Year) \emph{Title}, Publisher
+
+
+\end{thebibliography}
+
+\end{document}
+
