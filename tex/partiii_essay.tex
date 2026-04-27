@@ -221,6 +221,8 @@ Let $\bm{B}(\lambda)$ be a deformed GOE matrix. Then, there exists $C = C(\lambd
 Moreover, $C(\lambda)$ is bounded for $\lambda$ in any compact set.
 \end{lemma}
 
+We will discuss the proofs of the above two lemmas later in \cref{sec:bounds}. We will take them for granted here.
+
 Now we have the tools to obtain a lower bound on $n^{-2} \langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle$.
 \begin{align*}
 \left\langle \frac{\lambda}{n^2} \bm{x}\bm{x}^\top, \bm{X}^* \right\rangle & 
@@ -245,7 +247,7 @@ Then, we have, with probability at least $1 - Cn^{-4}$,
 \[n^{-2}\langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle \geq \Delta_2(\lambda).\]
 This is an important milestone, as it shows that $\bm{X}^*$ has a nontrivial correlation with the ground truth $\bm{x}\bm{x}^\top$.
 
-\subsubsection{Step 2: There exists a good label estimator among $\{\hat{\bm{x}}^{(i,j)}\}_{i,j \in [n]}$}
+\subsubsection{Step 2: There exists ``good'' label estimators among $\{\hat{\bm{x}}^{(i,j)}\}_{i,j \in [n]}$}
 We first define the following rounding function used in step \ref{alg:MS16.rounding} of \cref{alg:MS16}:
 \begin{definition}[Rounding function]
 For $t \geq 0$, define the \emph{rounding function} $r_t: \mathbb{R} \to \{-1, 0, +1\}$ as follows:
@@ -321,14 +323,18 @@ missed the scaling factor $\sqrt{n}$ in the definition of $Y$, but the conclusio
 Finally, note that for any value of $\tilde{t}$, we can find $\hat{\jmath} \in [n]$ such that 
 $r_{\tilde{t}}(\bm{v}^{(\hat{\imath})}) = r_{\bm{v}^{(\hat{\imath})}_{\hat{\jmath}}}(\bm{v}^{(\hat{\imath})}) = \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}$.
 Therefore, there exists some $\hat{\imath}, \hat{\jmath} \in [n]$ such that
-\[
+\begin{equation}
+\label{eqn:correlation}
 \frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle \geq \frac{\Delta_2(\lambda)}{2}.
-\]
+\end{equation}
 
 Now, it remains to show that the selection step (Step \ref{alg:MS16.selection}) of \cref{alg:MS16}
 will find such $\hat{\imath}, \hat{\jmath}$ with high probability, which will then complete the proof of Theorem \ref{thm:MS16.recovery}.
 
-\subsubsection{Step 3: The evaluation edge set gives a good estimator}
+\subsubsection{Step 3: A ``good'' estimator can be found with $G_\mathrm{eval}$}
+We first want to relate the quantities $\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}$,
+the objective function in Step \ref{alg:MS16.selection} of \cref{alg:MS16},
+to $\langle\bm{x}, \hat{\bm{x}}\rangle$, the correlation above, with high probability. 
 Recall the well-known Azuma-Hoeffding inequality.\todo{add reference}
 \begin{lemma}[Azuma-Hoeffding inequality]
 \label{lem:A-H}
@@ -370,7 +376,7 @@ Since $|E(G)| \leq m$, we have $X_m = \tilde{f}(G; \hat{\bm{x}})$. Note that for
 & \leq \sup_{e_{1:k-1}, e_k, e_k'} \left|\mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k-1} = e_{1:k-1}, E_k = e_k) 
 - \mathbb{E}(\tilde{f}(G; \hat{\bm{x}}) | E_{1:k-1} = e_{1:k-1}, E_k = e_k')\right|\\
 & \leq \sup_{E(G^+) = E(G) \cup \{(a,b)\}} \left|\tilde{f}(G^+; \hat{\bm{x}}) - \tilde{f}(G; \hat{\bm{x}})\right|\\
-& \leq |2\hat{\bm{x}}_a \hat{\bm{x}}_b| \leq 2.
+& \leq \sup_{a,b} |2\hat{\bm{x}}_a \hat{\bm{x}}_b| \leq 2.
 \end{align*}
 Hence, we can apply the Azuma-Hoeffding inequality \cref{lem:A-H} to $X$ with $c_i = 2$ for all $i \in [m]$ to obtain
 \begin{align*}
@@ -391,11 +397,115 @@ Hence, we can apply the Azuma-Hoeffding inequality \cref{lem:A-H} to $X$ with $c
 \end{align*}
 as desired.
 \end{proof}
-Now, since $|E_\mathrm{eval}| \sim \operatorname{Binomial}(\binom{n}{2}, n^{-1/2}/(1 + n^{-1/2}))$,
-we have 
+To apply the above concentration result, we need to bound 
+$|E_\mathrm{eval}| \sim \operatorname{Binomial}\left(|E|, n^{-1/2}/(1 + n^{-1/2})\right)$,
+which we can achieve with the following Chernoff bound argument.
+\begin{lemma}[Bounding $|E_\mathrm{eval}|$]
+\label{lem:eval.size}
+Let $p_n = n^{-1/2}/(1 + n^{-1/2})$. Then, for some constant $C > 0$, we have
+\[
+\mathbb{P}(|E_\mathrm{eval}| \geq C \sqrt{n}) \leq Ce^{-\sqrt{n}/C}.
+\]
+\end{lemma}
+\begin{proof}
+Recall that $|E| \sim \operatorname{Binomial}\left(\binom{n}{2}, d/n\right)$, so by Chernoff bound, for all $s > 0$, we have
+\begin{align*}
+  \mathbb{P}(|E| \geq K_0 n) & \leq e^{-s K_0 n} \mathbb{E}(e^{s|E|}) 
+  = e^{-sK_0 n} \left(1 - \frac{d}{n} + \frac{d}{n} e^{s}\right)^{\binom{n}{2}}\\
+  & \leq \exp\left(-s K_0 n + \frac{d}{n} (e^{s} - 1) \binom{n}{2}\right)\\
+  & \leq \exp\left(\left(\frac{d}{2} (e^{s} - 1) - sK_0\right) n\right)\\
+  & \leq C_0e^{-n/C_0},
+\end{align*}
+where the last inequality holds when $K_0$ is sufficiently large, and $C_0$ is a constant depending on $d$.
 
+Now, on the event $\{|E| \leq K_0 n\}$ with probability at least $1 - C_0e^{-n/C_0}$, 
+we have $|E_\mathrm{eval}| \sim \operatorname{Binomial}\left(|E|, p_n\right)$,
+so by Chernoff bound again, for all $s > 0$, we have
+\begin{align*}
+  \mathbb{P}(|E_\mathrm{eval}| \geq K_1 \sqrt{n})
+  & = \mathbb{E} \left(\mathbb{P}(|E_\mathrm{eval}| \geq K_1 \sqrt{n} \mid |E|)\right)
+  \leq e^{-sK_1\sqrt{n}} \mathbb{E}(\mathbb{E}(e^{s|E_\mathrm{eval}|} \mid |E|))\\
+  & = e^{-sK_1\sqrt{n}} \mathbb{E}(\left(1 - p_n + p_n e^s\right)^{|E|})
+  \leq e^{-sK_1\sqrt{n}} \left(1 + p_n (e^s - 1)\right)^{K_0 n}\\
+  & = \exp\left(-sK_1\sqrt{n} + K_0 (e^s - 1) n p_n \right)
+  \leq \exp\left((K_0 (e^s - 1) - sK_1) \sqrt{n}\right)\\
+  & \leq C_1e^{-\sqrt{n}/C_1},
+\end{align*}
+where the last inequality holds when $K_1$ is sufficiently large, and $C_1$ is a constant depending on $d$.
+Combining the two probability bounds, we have
+\[
+\mathbb{P}(|E_\mathrm{eval}| \geq K \sqrt{n}) \leq C_0e^{-n/C_0} + C_1e^{-\sqrt{n}/C_1} \leq Ce^{-\sqrt{n}/C},
+\]
+for suitable constants $C$, as desired.
+\end{proof}
+\todo{expand the following argument slightly}
+By Lemmas \ref{lem:conc} and \ref{lem:eval.size}, for all $s \in [0,1]$, we have,
+with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$,
+\[
+\left|\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}} 
+- \mathbb{E}\left(\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}\right)\right| \leq s \sqrt{n}.
+\]
+Note that
+\begin{align*}
+\mathbb{E}\left(\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}\right)
+&= \hat{\bm{x}}^\top \mathbb{E}\left(\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}\right) \hat{\bm{x}}\\
+&= \hat{\bm{x}}^\top \frac{\epsilon d}{2n} \left(\bm{x}\bm{x}^\top - \bm{I}_n\right) \hat{\bm{x}}\\
+&= \frac{\epsilon d}{2n} (\hat{\bm{x}}^\top \bm{x})^2 - \frac{\epsilon d}{2}.
+\end{align*}
+Thus, with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$, we have
+\begin{equation}
+\label{eqn:conc}
+  \left|\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}} 
+  - \frac{\epsilon d}{2n} \langle\bm{x}, \hat{\bm{x}}\rangle^2 + \frac{\epsilon d}{2}\right| \leq s \sqrt{n}.
+\end{equation}
+This concentration result relates $\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}$
+to the correlation $\langle\bm{x}, \hat{\bm{x}}\rangle$ with high probability.
 
+In particular, at the end of the previous step (\cref{eqn:correlation}), we have shown that 
+there exists some $\hat{\imath}, \hat{\jmath} \in [n]$ such that 
+$\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle \geq \frac{\Delta_2(\lambda)}{2}$.
+Then, by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}/C}$ (taking $s = 1$), we have
+\[
+  \frac{1}{n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
+  \geq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle\right)^2 
+  - \frac{\epsilon d}{2n} - \frac{1}{\sqrt{n}}
+  \geq \frac{\epsilon d}{8} \Delta_2(\lambda)^2 - \frac{\epsilon d}{2n} - \frac{1}{\sqrt{n}}
+  \geq \frac{\epsilon d}{12} \Delta_2(\lambda)^2 =: \Delta_3 (\lambda),
+\]
+where the last inequality follows from 
+\[
+\frac{\epsilon d}{2n} + \frac{1}{\sqrt{n}} \leq \frac{\epsilon d}{24} \Delta_2(\lambda)^2,
+\]
+which holds for sufficiently large $n$. Therefore,
+\[
+\max_{i, j \in [n]} \frac{1}{n} \hat{\bm{x}}^{(i,j)}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(i,j)}
+\geq \frac{1}{n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
+\geq \Delta_3 (\lambda).
+\]
 
+On the other hand, suppose that $\hat{\bm{x}}$ has a lower correlation with $\bm{x}$, say
+$\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle \leq \frac{\Delta_2(\lambda)}{4}$, 
+then by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}/C}$, we have
+\[
+\frac{1}{n} \hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}
+\leq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle\right)^2 
++ \frac{\epsilon d}{2n} + \frac{1}{\sqrt{n}}
+\leq \frac{\epsilon d}{32} \Delta_2(\lambda)^2 + \frac{\epsilon d}{24} \Delta_2(\lambda)^2
+< \frac{\epsilon d}{12} \Delta_2(\lambda)^2 = \Delta_3 (\lambda).
+\]
+
+Thus, with probability at least $1 - Ce^{-\sqrt{n}/C}$, the maximizer 
+$\hat{\bm{x}}^\mathrm{SDP} = \hat{\bm{x}}^{(i^*, j^*)}$ of 
+$\max_{i, j \in [n]} \hat{\bm{x}}^{(i,j)}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(i,j)}$
+must satisfy
+\[
+\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \frac{\Delta_2(\lambda)}{4}.
+\]
+This completes the proof of Theorem \ref{thm:MS16.recovery}. 
+\qed
+\subsection{Proof of Robustness}
+\subsection{Looking at the unproved lemmas and extension to graphons}
+\label{sec:bounds}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % REFERENCES
