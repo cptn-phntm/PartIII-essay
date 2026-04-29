@@ -687,7 +687,7 @@ for all $i \in [N]$. Then, we have
 \end{lemma}
 Thus, we construct a matrix $\bm{D}$, such that $\bm{D}$ is a Gaussian matrix with first and second 
 moments matching those of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Then, apply the above lemma to 
-$F(\bm{M}) := \mathbb{E}\Phi(\beta, k; \bm{M})$ with $\bm{X} = \bm{A}^\mathrm{cen}_{G} / \sqrt{d}$ and 
+$F(\bm{M}) := \Phi(\beta, k; \bm{M})$ with $\bm{X} = \bm{A}^\mathrm{cen}_{G} / \sqrt{d}$ and 
 $\bm{Z} = \bm{D}$, we can bound the difference between $F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d})$ and $F(\bm{D})$.
 
 First, we bound the third moments of the entries of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Note that if 
@@ -727,27 +727,27 @@ for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
 \todo{calc C}
 
 \subsubsection{Coupling of Gaussian Matrices}
-To bound the difference between $F(\bm{D})$ and $F(\bm{B}(\lambda))$, we first notice that, for all 
-matrices $\bm{M}, \bm{M}' \in \mathbb{R}^{n \times n}$, we have 
+For simplicity, we write $\bm{B}(\lambda) = \bm{B}$. To bound the difference between $F(\bm{D})$ 
+and $F(\bm{B}(\lambda))$, we first notice that, for all matrices $\bm{M}, \bm{M}' 
+\in \mathbb{R}^{n \times n}$, we have 
 \begin{align*}
-\Phi(\beta, k; \bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
+F(\bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
 \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
 &=
 \end{align*}
 \todo{finish the argument above}
 Hence,
 \[
-\left| \frac{1}{n}\Phi(\beta, k; \bm{M}) - \frac{1}{n}\Phi(\beta, k; \bm{M}')\right| 
+\left| \frac{1}{n}F(\bm{M}) - \frac{1}{n}F(\bm{M}')\right| 
 \leq \|\bm{M} - \bm{M}'\|_{\mathrm{op}}.
 \]
 Therefore,
 \begin{align*}
-\frac{1}{n} \left|F(\bm{D}) - F(\bm{B}(\lambda))\right|
-&= \frac{1}{n} \left|\mathbb{E}\Phi(\beta, k; \bm{D}) - \mathbb{E}\Phi(\beta, k; \bm{B}(\lambda))\right|\\
-&\leq \frac{1}{n} \mathbb{E} \left|\Phi(\beta, k; \bm{D}) - \Phi(\beta, k; \bm{B}(\lambda))\right|\\
-&\leq \mathbb{E} \|\bm{D} - \bm{B}(\lambda)\|_{\mathrm{op}}.
+\frac{1}{n} \left|\mathbb{E}F(\bm{D}) - \mathbb{E}F(\bm{B})\right|
+&\leq \frac{1}{n} \mathbb{E} \left|F(\bm{D}) - F(\bm{B})\right|\\
+&\leq \mathbb{E} \|\bm{D} - \bm{B}\|_{\mathrm{op}}.
 \end{align*}
-Thus, we want to find a bound on $\mathbb{E} \|\bm{D} - \bm{B}(\lambda)\|_{\mathrm{op}}$. To do this,
+Thus, we want to find a bound on $\mathbb{E} \|\bm{D} - \bm{B}\|_{\mathrm{op}}$. To do this,
 we will use a coupling argument. Writing $V_{ij} = n p_{ij} (1 - p_{ij}) / d$, note that
 \[
 V_{ij} = (1 + \eta_{ij})\left(1 - \frac{d}{n}(1 + \eta_{ij})\right),
@@ -758,11 +758,11 @@ V_{ij} = (1 + \eta_{ij})\left(1 - \frac{d}{n}(1 + \eta_{ij})\right),
 \]
 \todo{check signs}
 \[
-\bm{B}(\lambda)_{ij} \sim \mathcal{N}\left(
+\bm{B}_{ij} \sim \mathcal{N}\left(
 \frac{\lambda}{n} x_i x_j, \ \frac{1}{n}\right).
 \]
 \todo{diagonal}
-Thus, we can couple $\bm{D}$ and $\bm{B}(\lambda)$ such that
+Thus, we can couple $\bm{D}$ and $\bm{B}$ such that
 \[
 \bm{D} = \frac{\lambda}{n} \bm{x} \bm{x}^\top + \frac{\sqrt{d}}{n} \bm{H} 
 + \bm{Z_0} + \bm{Z_D},
@@ -793,7 +793,7 @@ Writing $V_- = \min_{i,j} V_{ij}$, the variances of the entries are given by
 Under this coupling, by the triangle inequality, we have
 \[
 \mathbb{E} \| \bm{D} - \bm{B}\|_{\mathrm{op}} =
-\mathbb{E} \|\frac{\sqrt{d}}{n} \bm{H} + \bm{Z_D} - \bm{Z_B}\|_{\mathrm{op}}
+\mathbb{E} \left\|\frac{\sqrt{d}}{n} \bm{H} + \bm{Z_D} - \bm{Z_B}\right\|_{\mathrm{op}}
 \leq \frac{\sqrt{d}}{n} \mathbb{E} \|\bm{H}\|_{\mathrm{op}} + \mathbb{E} \|\bm{Z_D}\|_{\mathrm{op}} 
 + \mathbb{E} \|\bm{Z_B}\|_{\mathrm{op}}.
 \]
@@ -851,6 +851,12 @@ Therefore, we have
 &\leq \frac{\sqrt{d}}{n} \left(C d^{-1/2-\alpha}\right) + C \sqrt{\delta V} \\
 &= Cd^{-\alpha}.
 \end{align*}
+Combining with the bound from the Lindeberg interpolation step, we have
+\[
+\frac{1}{n} \left| \mathbb{E}F\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right) 
+- \mathbb{E}F(\bm{B})\right| \leq \frac{C\beta^2}{\sqrt{d}} + Cd^{-\alpha}.
+\]
+\subsubsection{(tie all the ineqs together)}
 \todo{tie all the ineqs together}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
