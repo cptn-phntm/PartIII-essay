@@ -158,14 +158,15 @@ the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfie
 \end{theorem}
 \todo{discuss robustness of the algorithm}
 
-\subsection{Proof of Weak Recovery (Theorem \ref{thm:MS16.recovery})}
+\section{Proof of Weak Recovery (Theorem \ref{thm:MS16.recovery})}
+\label{sec:weak.recovery}
 \todo{introduce the proof strategy}
 Let $\bm{x}$ be the label vector of $G \sim \mathcal{G}(n, d, \epsilon)$. Note that $G_\mathrm{sample} \sim \mathcal{G}(n, d_\mathrm{sample}, \epsilon)$, 
 and $G_\mathrm{eval} \sim \mathcal{G}(n, d_\mathrm{eval}, \epsilon)$, where $d_\mathrm{sample} = d/(1 + n^{-1/2})$ and $d_\mathrm{eval} = n^{-1/2}d_\mathrm{sample}$.
 For simplicity, from now on we write $d = d_\mathrm{sample}$.
 \todo{investigate independence}
 
-\subsubsection{Step 1: $\bm{X}^*$ contains nontrivial information about $\bm{x}$}
+\subsection{Step 1: $\bm{X}^*$ contains nontrivial information about $\bm{x}$}
 We first introduce a group of Gaussian random matrices (GOEs) that have well-behaved SDP values.
 \begin{definition}[Gaussian orthogonal ensemble (GOE) and the deformed GOE $\bm{B}(\lambda)$]
 \label{def:GOE}
@@ -247,7 +248,7 @@ Then, we have, with probability at least $1 - Cn^{-4}$,
 \[n^{-2}\langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle \geq \Delta_2(\lambda).\]
 This is an important milestone, as it shows that $\bm{X}^*$ has a nontrivial correlation with the ground truth $\bm{x}\bm{x}^\top$.
 
-\subsubsection{Step 2: There exists ``good'' label estimators among $\{\hat{\bm{x}}^{(i,j)}\}_{i,j \in [n]}$}
+\subsection{Step 2: There exists ``good'' label estimators among $\{\hat{\bm{x}}^{(i,j)}\}_{i,j \in [n]}$}
 We first define the following rounding function used in step \ref{alg:MS16.rounding} of \cref{alg:MS16}:
 \begin{definition}[Rounding function]
 For $t \geq 0$, define the \emph{rounding function} $r_t: \mathbb{R} \to \{-1, 0, +1\}$ as follows:
@@ -331,7 +332,7 @@ Therefore, there exists some $\hat{\imath}, \hat{\jmath} \in [n]$ such that
 Now, it remains to show that the selection step (Step \ref{alg:MS16.selection}) of \cref{alg:MS16}
 will find such $\hat{\imath}, \hat{\jmath}$ with high probability, which will then complete the proof of Theorem \ref{thm:MS16.recovery}.
 
-\subsubsection{Step 3: A ``good'' estimator can be found with $G_\mathrm{eval}$}
+\subsection{Step 3: A ``good'' estimator can be found with $G_\mathrm{eval}$}
 We first want to relate the quantities $\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}$,
 the objective function in Step \ref{alg:MS16.selection} of \cref{alg:MS16},
 to $\langle\bm{x}, \hat{\bm{x}}\rangle$, the correlation above, with high probability. 
@@ -501,11 +502,88 @@ must satisfy
 \[
 \frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \frac{\Delta_2(\lambda)}{4}.
 \]
-This completes the proof of Theorem \ref{thm:MS16.recovery}. 
-\qed
-\subsection{Proof of Robustness}
-\subsection{Looking at the unproved lemmas and extension to graphons}
+This completes the proof of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquare$
+
+\section{Examining Robustness Properties of the SDP}
+\subsection{Approximating SDP of adjacency matrices / Looking at the unproved lemmas and extension to graphons}
+We will now briefly sketch out the proofs of Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}
+by highlighting the main ideas (see the original paper \cite{MS16} for details).
+We will then apply these ideas to show that the algorithm works for a more general class of random graph models, 
+which we will define below.
+\begin{definition}[Perturbed SBM]
+A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
+with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
+and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
+if for each pair of vertices $i, j \in [n]$, we have
+\[\mathbb{P}((i,j) \in E) = \begin{cases}
+\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
+\end{cases}\] 
+\end{definition}
+\begin{remark}
+Note that the proof of weak recovery in \cref{sec:weak.recovery} uses the adjacency matrix of the graph 
+only in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
+which we will discuss for the rest of this section,
+and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
+for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
+Thus, to show that the algorithm still works for the perturbed SBM,
+we only need to show that similar SDP approximation results still hold for the perturbed SBM.
+\end{remark}
+\subsubsection{General approach to approximating SDP of adjacency matrices}
 \label{sec:bounds}
+The main idea of approximating the SDP of adjacency matrices is to utilize the following two helper functions:
+\begin{definition}[$\mathcal{OPT}_k$]
+Define the rank-constrained SDP value for $\bm{M} \in \mathbb{R}^{n\times n}$ and $k \in [n]$:
+\[
+\mathcal{OPT}_k(\bm{M}) = \max_{\substack{\bm{X} \in \mathcal{PSD}_1(n)\\
+\operatorname{rank}(\bm{X}) \leq k}} \langle \bm{M}, \bm{X} \rangle.
+\]
+Equivalently, let $\mathbb{S}^{k-1} = \{\bm{v} \in \mathbb{R}^k: ||\bm{v}||_2 = 1\}$ be the unit sphere
+in $\mathbb{R}^k$, then we have
+\[
+\mathcal{OPT}_k(\bm{M}) = \max_{\bm{\sigma}_1, \dots, \bm{\sigma}_n \in \mathbb{S}^{k-1}}
+\sum_{i,j=1}^n M_{ij} \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle.
+\]
+\end{definition}
+\begin{definition}[Smoothed OPT]
+For $\beta > 0$, define $\Phi(\beta, k; \bm{M})$, the smoothed version of $\mathcal{OPT}_k(\bm{M})$, as follows:
+\[
+\Phi(\beta, k; \bm{M}) = \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
+\langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right),
+\]
+where $\nu$ is the uniform probability measure on $(\mathbb{S}^{k-1})^n$.
+
+We can see that as $\beta \to \infty$, $\Phi(\beta, k; \bm{M})$ will select the maximum value of
+$\sum_{i,j=1}^n M_{ij} \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle$, which is exactly $\mathcal{OPT}_k(\bm{M})$.
+\end{definition}
+
+In their paper, Montanari and Sen showed the following bounds relating $\mathcal{SDP}(\bm{M})$, 
+$\mathcal{OPT}_k(\bm{M})$ and $\Phi(\beta, k; \bm{M})$. We will quote these results without proof.
+\begin{theorem}[SDP vs OPT, Theorem 4 Equation 15 of \cite{MS16}]
+\label{thm:SDP.OPT}
+For $k \geq k_0$, where $k_0$ is a sufficiently large constant, for any symmetric matrix 
+$\bm{M} \in \mathbb{R}^{n \times n}$, we have
+\[
+\left(1-\frac{1}{k}\right) \mathcal{SDP}(\bm{M}) - \frac{1}{k} |\mathcal{SDP}(-\bm{M})|
+\leq \mathcal{OPT}_k(\bm{M}) \leq \mathcal{SDP}(\bm{M}).
+\] 
+\end{theorem}
+\begin{theorem}[OPT vs $\Phi$, Lemma 3.2 of \cite{MS16}]
+\label{thm:OPT.Phi}
+If $\bm{M} \in \mathbb{R}^{n \times n}$ satisfies
+\[
+\|\bm{M}\|_{\infty \to 2} := \max_{||\bm{v}||_\infty \leq 1} ||\bm{M}\bm{v}||_2 \leq L\sqrt{n},
+\]
+then for any $\beta > 0$, $k \in [n]$, and $\epsilon \in (0,1]$, there exists a constant $C$, such that
+\[
+\left|\frac{1}{n}\Phi(\beta, k; \bm{M}) - \frac{1}{n}\mathcal{OPT}_k(\bm{M})\right| 
+\leq 2L\epsilon \sqrt{k} + \frac{k}{\beta}\log\frac{C}{\epsilon}.
+\]
+\end{theorem}
+\todo{briefly bound SDP to Phi for B(lambda) and cent adj matrix}
+\subsubsection{Interpolation}
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % REFERENCES
