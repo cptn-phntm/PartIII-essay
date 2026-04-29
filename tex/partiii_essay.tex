@@ -157,13 +157,28 @@ the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfie
 \[\mathbb{P}\left(\frac{1}{n} |\langle \hat{\bm{x}}^\mathrm{SDP}(G), x \rangle| \geq \eta \right) \geq 1 - Ce^{-\sqrt{n}/C}.\]
 \end{theorem}
 \todo{discuss robustness of the algorithm}
-
 \section{Proof of Weak Recovery (Theorem \ref{thm:MS16.recovery})}
 \label{sec:weak.recovery}
-\todo{introduce the proof strategy}
-Let $\bm{x}$ be the label vector of $G \sim \mathcal{G}(n, d, \epsilon)$. Note that $G_\mathrm{sample} \sim \mathcal{G}(n, d_\mathrm{sample}, \epsilon)$, 
-and $G_\mathrm{eval} \sim \mathcal{G}(n, d_\mathrm{eval}, \epsilon)$, where $d_\mathrm{sample} = d/(1 + n^{-1/2})$ and $d_\mathrm{eval} = n^{-1/2}d_\mathrm{sample}$.
+\todo{restructure and move main theorem to this section}
+Before we start the proof, we will make a few definitions, and show a few preliminary results.
+Let $\bm{x}$ be the label vector of $G \sim \mathcal{G}(n, d, \epsilon)$. Note that 
+$G_\mathrm{sample} \sim \mathcal{G}(n, d_\mathrm{sample}, \epsilon)$, 
+and $G_\mathrm{eval} \sim \mathcal{G}(n, d_\mathrm{eval}, \epsilon)$, 
+where $d_\mathrm{sample} = d/(1 + n^{-1/2})$ and $d_\mathrm{eval} = n^{-1/2}d_\mathrm{sample}$.
 For simplicity, from now on we write $d = d_\mathrm{sample}$.
+
+Throughout the proof, we will use the constant $C$ to denote a positive constant that changes 
+from line to line. We will often use the fact that, if two events both hold with probability 
+at least $1 - Ce^{-n/C}$, then their intersection also holds with probability at least $1 - Ce^{-n/C}$, 
+by a simple union bound, and
+\[
+C_1 e^{-n/C_1} + C_2 e^{-n/C_2} \leq (C_1 + C_2) e^{-n/\max(C_1, C_2)} 
+\leq (C_1 + C_2) e^{-n/(C_1 + C_2)} = C e^{-n/C}.
+\]
+
+Also, note that, in our definition, $G_\mathrm{sample}$ and $G_\mathrm{eval}$ are dependent. However,
+we need their independence in our proof. To fix this issue, we note that if we sampled them independently, 
+then the two graphs 
 \todo{investigate independence}
 
 \subsection{Step 1: $\bm{X}^*$ contains nontrivial information about $\bm{x}$}
@@ -504,35 +519,24 @@ must satisfy
 \]
 This completes the proof of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquare$
 
-\section{Examining Robustness Properties of the SDP}
-\subsection{Approximating SDP of adjacency matrices / Looking at the unproved lemmas and extension to graphons}
-We will now briefly sketch out the proofs of Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}
-by highlighting the main ideas (see the original paper \cite{MS16} for details).
-We will then apply these ideas to show that the algorithm works for a more general class of random graph models, 
-which we will define below.
-\begin{definition}[Perturbed SBM]
-A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
-with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
-i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
-and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
-if for each pair of vertices $i, j \in [n]$, we have
-\[\mathbb{P}((i,j) \in E) = \begin{cases}
-\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
-\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
-\end{cases}\] 
-\end{definition}
-\begin{remark}
-Note that the proof of weak recovery in \cref{sec:weak.recovery} uses the adjacency matrix of the graph 
-only in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
-which we will discuss for the rest of this section,
-and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
-for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
-Thus, to show that the algorithm still works for the perturbed SBM,
-we only need to show that similar SDP approximation results still hold for the perturbed SBM.
-\end{remark}
-\subsubsection{General approach to approximating SDP of adjacency matrices}
-\label{sec:bounds}
-The main idea of approximating the SDP of adjacency matrices is to utilize the following two helper functions:
+\section{Robustness of the SDP}
+\subsection{Robustness against modifying $O(n\sqrt{d})$ edges}
+\label{sec:edge.robust}
+\todo{explain}
+\subsection{Approximation of the SDP of adjacency matrices with the SDP of deformed GOE matrices}
+\label{sec:sdp.approx}
+In this section, we briefly outline the main ingredients behind results like Lemmas \ref{lem:SDP.approx1} 
+and \ref{lem:SDP.approx2}, stating the key theorems used in their proofs without going into the details;
+we refer the reader to their original paper \cite{MS16} for complete arguments.
+
+In the following section, we will show how these ingredients can be combined to prove weak recovery 
+for a more general class of random graph models, demonstrating another layer of robustness.
+
+\subsubsection{Helper functions}
+\label{sec:sdp.helper}
+\todo{check for sqrt d factor}
+The main idea of approximating the SDP of adjacency matrices with the SDP of deformed GOE matrices
+is to utilize the following two helper functions:
 \begin{definition}[$\mathcal{OPT}_k$]
 Define the rank-constrained SDP value for $\bm{M} \in \mathbb{R}^{n\times n}$ and $k \in [n]$:
 \[
@@ -547,7 +551,8 @@ in $\mathbb{R}^k$, then we have
 \]
 \end{definition}
 \begin{definition}[Smoothed OPT]
-For $\beta > 0$, define $\Phi(\beta, k; \bm{M})$, the smoothed version of $\mathcal{OPT}_k(\bm{M})$, as follows:
+For $\beta > 0$, define $\Phi(\beta, k; \bm{M})$, the smoothed version of $\mathcal{OPT}_k(\bm{M})$,
+as follows:
 \[
 \Phi(\beta, k; \bm{M}) = \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
 \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right),
@@ -569,6 +574,12 @@ $\bm{M} \in \mathbb{R}^{n \times n}$, we have
 \leq \mathcal{OPT}_k(\bm{M}) \leq \mathcal{SDP}(\bm{M}).
 \] 
 \end{theorem}
+\begin{remark}
+Clearly, $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ are symmetric matrices, so 
+the above bound applies to them.
+\todo{derive line 49 and 50}
+\end{remark}
+
 \begin{theorem}[OPT vs $\Phi$, Lemma 3.2 of \cite{MS16}]
 \label{thm:OPT.Phi}
 If $\bm{M} \in \mathbb{R}^{n \times n}$ satisfies
@@ -581,9 +592,266 @@ then for any $\beta > 0$, $k \in [n]$, and $\epsilon \in (0,1]$, there exists a 
 \leq 2L\epsilon \sqrt{k} + \frac{k}{\beta}\log\frac{C}{\epsilon}.
 \]
 \end{theorem}
-\todo{briefly bound SDP to Phi for B(lambda) and cent adj matrix}
-\subsubsection{Interpolation}
+\begin{remark}
+In particular, we can show that (Lemma A.3 of \cite{MS16}) for any graph $G$ with bounded degree, we have 
+$\|\bm{A}^\mathrm{cen}_{G}\|_{\infty \to 2} \leq Cd\sqrt{n}$, and for any $\lambda \in \mathbb{R}$, 
+we have $\|\bm{B}(\lambda)\|_{\infty \to 2} \leq (C + |\lambda|)\sqrt{n}$, so the above bound 
+applies to $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$.
+\end{remark}
 
+They further showed the following concentration result for $\Phi$.
+\begin{theorem}[Concentration of $\Phi$, Lemma A.1 of \cite{MS16}]
+\label{thm:Phi.conc}
+If $\bm{M} \in \mathbb{R}^{n \times n}$ is $\bm{A}^\mathrm{cen}_{G}$ for some graph $G$ with bounded degree,
+or $\bm{B}(\lambda)$ for some $\lambda \in \mathbb{R}$, then for any $\beta > 0$ and $k \leq n$, 
+for all $t>0$, we have
+\[
+\mathbb{P}\left(\left|\frac{1}{n}\Phi(\beta, k; \bm{M})
+- \mathbb{E}\left(\frac{1}{n}\Phi(\beta, k; \bm{M})\right)\right| \geq t\right) \leq Ce^{-nt^2/C}.
+\]
+\end{theorem}
+
+Therefore, the problem of approximating $\mathcal{SDP}(\bm{A}^\mathrm{cen}_{G})$ with
+$\mathcal{SDP}(\bm{B}(\lambda))$ can be reduced to the problem of interpolating between
+$\mathbb{E}(\Phi(\beta, k; \bm{A}^\mathrm{cen}_{G}))$ and $\mathbb{E}(\Phi(\beta, k; \bm{B}(\lambda)))$.
+We will defer the details of the interpolation step to the next section, where we examine a more general
+family of random graph models, the perturbed SBMs. As it turns out, the interpolation step will be the
+most central step in extending the algorithm to the new setting.
+
+\subsection{Robustness with perturbed SBMs}
+We first define the following more general class of random graph models, the \emph{perturbed SBM}. 
+We will then show that the same algorithm still works for this more general class of random graph
+models, which demonstrates the robustness of the algorithm and the SDP approach in general.
+\begin{definition}[Perturbed SBM]
+A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
+with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
+and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
+if for each pair of vertices $i, j \in [n]$, we have
+\[p_{ij} := \mathbb{P}((i,j) \in E) = \begin{cases}
+\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
+\end{cases}\]
+We write $\eta_{ij} = x_ix_j\epsilon/2 + h(\xi_i, \xi_j)$, and $h_{ij} = h(\xi_i, \xi_j)$ for short.
+\end{definition}
+
+We have the following weak recovery result for the perturbed SBM.
+\begin{theorem}[Weak recovery for perturbed SBM]
+\label{thm:perturbed.SBM}
+Let $G \sim \mathcal{G}(n, d, \epsilon)$ be a balanced, two-community $h$-perturbed SBM graph,
+and let $\lambda = \epsilon^2 d / 4$. Suppose there exists $\alpha > 0$, such that:
+\begin{enumerate}
+  \item[(a)] the perturbation $h$ satisfies that $\|h\|_\infty \leq C d^{-2\alpha}$,
+  \item[(b)] let $\bm{H}$ be the matrix with entries $H_{ij} = h(\xi_i, \xi_j)$, 
+  then $\mathbb{E}(\|\bm{H}\|_\text{op}) \leq C d^{-1/2 - \alpha}$.
+\end{enumerate}
+If $\lambda > 1$, then there exists some constant 
+$\Delta_4(\lambda) > 0$, such that with probability at least $1 - Cn^{-4}$ \todo{check the probability bound},
+the estimator $\hat{\bm{x}}^\mathrm{SDP}$ returned by \cref{alg:MS16} satisfies
+\[
+\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \Delta_4(\lambda).
+\]
+\end{theorem}
+\todo{robustness remark}
+\todo{why this can have more than $O(n\sqrt{d})$ edge modifications}
+\begin{remark}
+Note that the proof of weak recovery in \cref{sec:weak.recovery} only uses the adjacency matrix of the graph 
+in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
+which we will discuss for the rest of this section,
+and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
+for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
+Thus, to show that the algorithm remains effective for the perturbed SBM,
+we only need to show that similar SDP approximation results hold for the perturbed SBM.
+Furthermore, note that all the theorems in \cref{sec:sdp.helper} for the centered adjacency matrix
+only require the graph to have a bounded degree, so they will still hold for the perturbed SBM.
+\end{remark}
+
+Therefore, in this section, we will first demonstrate how the interpolation step works
+works for the perturbed SBM, and then put everything together to get a similar SDP approximation 
+result as in Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}, which will prove theorem 
+\ref{thm:perturbed.SBM}.
+\subsubsection{Lindeberg Interpolation}
+\label{sec:sdp.interp}
+The motivation of the interpolation step is the following Lindeberg interpolation lemma. \todo{cite}
+\begin{lemma}[Lindeberg interpolation]
+\label{lem:lindeberg}
+Let $F: \mathbb{R}^N \to \mathbb{R}$ be a thrice continuously differentiable function, and
+let $\bm{X} = (X_1, \ldots, X_N)$ and $\bm{Z} = (Z_1, \ldots, Z_N)$ be two vectors of independent 
+random variables satisfying $\mathbb{E}(X_i) = \mathbb{E}(Z_i)$ and $\mathbb{E}(X_i^2) = \mathbb{E}(Z_i^2)$ 
+for all $i \in [N]$. Then, we have
+\[
+\left|\mathbb{E} \left( F(\bm{X}) - F(\bm{Z})\right)\right| \leq \frac{1}{6} 
+\left(\max_{i \in [N]} \|\partial_i^3 F\|_\infty \right)
+\left(\sum_{i=1}^{N} \mathbb{E}\left[|X_i|^3 + |Z_i|^3\right]\right).
+\]
+\end{lemma}
+Thus, we construct a matrix $\bm{D}$, such that $\bm{D}$ is a Gaussian matrix with first and second 
+moments matching those of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Then, apply the above lemma to 
+$F(\bm{M}) := \mathbb{E}\Phi(\beta, k; \bm{M})$ with $\bm{X} = \bm{A}^\mathrm{cen}_{G} / \sqrt{d}$ and 
+$\bm{Z} = \bm{D}$, we can bound the difference between $F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d})$ and $F(\bm{D})$.
+
+First, we bound the third moments of the entries of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Note that if 
+$X \sim \operatorname{Ber}(p)$, then for $a \in [0,1]$, $\mathbb{E}[|X - a|^3] 
+= (1-p)a^3 + p(1-a)^3 \leq a + p$. Since $\bm{A}^\mathrm{cen}_{G_{ij}} = \bm{A}_{G_{ij}} - d/n$, and
+$\bm{A}_{G_{ij}} \sim \operatorname{Ber}\left(\frac{d}{n}(1 + \eta_{ij})\right)$,
+we have 
+\[
+\sum_{i,j \in [n]} \mathbb{E} \left|\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G_{ij}}\right|^3 
+\leq \frac{1}{d^{3/2}}\sum_{i,j \in [n]}\frac{d}{n}(2 + \eta_{ij})
+\leq \frac{2n}{\sqrt{d}} + \frac{1}{n\sqrt{d}}\sum_{i,j \in [n]} h_{ij}
+< \frac{3n}{\sqrt{d}}.
+\]
+\todo{finish the argument above}
+
+Next, we bound the third moments of the entries of $\bm{D}$. Note that if $X = a + bZ$, where
+$Z \sim \mathcal{N}(0,1)$, then $\mathbb{E}[|X|^3] \leq 4(|a|^3 + |b|^3)$. Since
+$\bm{D}_{ij} = -p_{ij} / \sqrt{d} + \sqrt{p_{ij}(1-p_{ij})/d} Z_{ij}$, where $Z_{ij} \sim \mathcal{N}(0,1)$, we have
+\begin{align*}
+\sum_{i,j \in [n]} \mathbb{E} \left|\bm{D}_{ij}\right|^3 
+&\leq 4\sum_{i,j \in [n]} \left(\left(\frac{p_{ij}}{\sqrt{d}}\right)^3 
++ \left(\frac{p_{ij}(1-p_{ij})}{d}\right)^{3/2}\right)\\
+&\leq \sum_{i,j \in [n]} \left(\frac{d^{3/2}}{n^3}(1+\eta_{ij})^3 
++ \frac{1}{n^{3/2}}(1+\eta_{ij})^{3/2}\right)\\
+&\leq \frac{8d^{3/2}}{n} + 2\sqrt{2n}
+< \frac{n}{\sqrt{d}},
+\end{align*}
+where we used the fact that $|\eta_{ij}| \leq 1$ and $d \ll n$.
+\todo{clean up argument}
+
+Finally, Montanari and Sen proved that $\| \partial_{ij}^3 F\|_\infty \leq 6\beta^2$ 
+for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
+\[
+\left|\mathbb{E} \left( F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d}) - F(\bm{D})\right)\right|
+\leq \frac{Cn\beta^2}{\sqrt{d}}
+\]
+\todo{calc C}
+
+\subsubsection{Coupling of Gaussian Matrices}
+To bound the difference between $F(\bm{D})$ and $F(\bm{B}(\lambda))$, we first notice that, for all 
+matrices $\bm{M}, \bm{M}' \in \mathbb{R}^{n \times n}$, we have 
+\begin{align*}
+\Phi(\beta, k; \bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
+\langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
+&=
+\end{align*}
+\todo{finish the argument above}
+Hence,
+\[
+\left| \frac{1}{n}\Phi(\beta, k; \bm{M}) - \frac{1}{n}\Phi(\beta, k; \bm{M}')\right| 
+\leq \|\bm{M} - \bm{M}'\|_{\mathrm{op}}.
+\]
+Therefore,
+\begin{align*}
+\frac{1}{n} \left|F(\bm{D}) - F(\bm{B}(\lambda))\right|
+&= \frac{1}{n} \left|\mathbb{E}\Phi(\beta, k; \bm{D}) - \mathbb{E}\Phi(\beta, k; \bm{B}(\lambda))\right|\\
+&\leq \frac{1}{n} \mathbb{E} \left|\Phi(\beta, k; \bm{D}) - \Phi(\beta, k; \bm{B}(\lambda))\right|\\
+&\leq \mathbb{E} \|\bm{D} - \bm{B}(\lambda)\|_{\mathrm{op}}.
+\end{align*}
+Thus, we want to find a bound on $\mathbb{E} \|\bm{D} - \bm{B}(\lambda)\|_{\mathrm{op}}$. To do this,
+we will use a coupling argument. Writing $V_{ij} = n p_{ij} (1 - p_{ij}) / d$, note that
+\[
+V_{ij} = (1 + \eta_{ij})\left(1 - \frac{d}{n}(1 + \eta_{ij})\right),
+\]
+\[
+\bm{D}_{ij} \sim \mathcal{N}\left(
+\frac{\lambda}{n} x_i x_j + \frac{\sqrt{d}}{n} h_{ij}, \ \frac{1}{n}V_{ij}\right),
+\]
+\todo{check signs}
+\[
+\bm{B}(\lambda)_{ij} \sim \mathcal{N}\left(
+\frac{\lambda}{n} x_i x_j, \ \frac{1}{n}\right).
+\]
+\todo{diagonal}
+Thus, we can couple $\bm{D}$ and $\bm{B}(\lambda)$ such that
+\[
+\bm{D} = \frac{\lambda}{n} \bm{x} \bm{x}^\top + \frac{\sqrt{d}}{n} \bm{H} 
++ \bm{Z_0} + \bm{Z_D},
+\]
+\[
+\bm{B} = \frac{\lambda}{n} \bm{x} \bm{x}^\top + \bm{Z_0} + \bm{Z_B},
+\]
+where $\bm{Z_0}, \bm{Z_D}, \bm{Z_B}$ are Gaussian matrices with mean-zero, independent entries.
+Writing $V_- = \min_{i,j} V_{ij}$, the variances of the entries are given by
+\[
+\operatorname{Var}(\bm{Z_0}{}_{,ij}) = \begin{cases}
+\frac{1}{n}V_- & \text{if } i \neq j,\\
+0 & \text{if } i = j,
+\end{cases}
+\]
+\[
+\operatorname{Var}(\bm{Z_D}{}_{,ij}) = \begin{cases}
+\frac{1}{n}(V_{ij} - V_-) & \text{if } i \neq j,\\
+0 & \text{if } i = j,
+\end{cases}
+\]
+\[
+\operatorname{Var}(\bm{Z_B}{}_{,ij}) = \begin{cases}
+\frac{1}{n}(1 - V_-) & \text{if } i \neq j,\\
+0 & \text{if } i = j,
+\end{cases}
+\]
+Under this coupling, by the triangle inequality, we have
+\[
+\mathbb{E} \| \bm{D} - \bm{B}\|_{\mathrm{op}} =
+\mathbb{E} \|\frac{\sqrt{d}}{n} \bm{H} + \bm{Z_D} - \bm{Z_B}\|_{\mathrm{op}}
+\leq \frac{\sqrt{d}}{n} \mathbb{E} \|\bm{H}\|_{\mathrm{op}} + \mathbb{E} \|\bm{Z_D}\|_{\mathrm{op}} 
++ \mathbb{E} \|\bm{Z_B}\|_{\mathrm{op}}.
+\]
+\todo{condition on xis}
+\todo{mention symmetry of everything}
+\todo{theorem statement gives op bound of H}
+We then use the following result for operator norm of centered Gaussian matrices.
+\todo{cite, 1408.6185}
+\begin{theorem}[Operator norm of Gaussian matrices]
+\label{thm:gaussian.op}
+Let $\bm{X}$ be an $n \times n$ symmetric matrix with $\bm{X}_{ij} = g_{ij}b_{ij}$ for $i \geq j$, 
+where $g_{ij}$ are independent standard Gaussian variables, and $b_{ij}$ are given scalars. 
+Then, writing 
+\[
+\sigma^*_\text{col} = \max_{j \in [n]} \sqrt{\sum_{i=1}^n b_{ij}^2}, \quad
+\sigma^*_\text{elt} = \max_{i,j \in [n]} |b_{ij}|,
+\]
+for every $\epsilon \in (0,1/2]$, we have
+\[
+\mathbb{E} \| \bm{X} \| \leq (1+\epsilon) \left(2\sigma^*_\text{row} 
++ \frac{6}{\sqrt{\log(1+\epsilon)}} \sigma^*_\text{elt} \sqrt{\log n}\right)
+\]
+\end{theorem}
+In our case, writing $V_+ = \max_{i,j} V_{ij}$ \todo{edit V+- defn}, for all $i, j \in [n]$, we have
+\[ 
+\operatorname{Var}(\bm{Z_D}{}_{,ij}),\ \operatorname{Var}(\bm{Z_B}{}_{,ij}) 
+\leq \frac{1}{n}(V_+ - V_-).
+\]
+Thus, writing $\delta V := V_+ - V_-$, we have $\sigma^*_\text{col} \leq \sqrt{\delta V}$, 
+$\sigma^*_\text{elt} \leq \sqrt{\delta V / n}$. Applying the above theorem,
+\[
+\mathbb{E} \|\bm{Z_D}\|,\ \mathbb{E} \|\bm{Z_B}\| 
+\leq (1+\epsilon) \left(2 + \frac{6}{\sqrt{\log(1+\epsilon)}} \sqrt{\frac{\log n}{n}} \right)\sqrt{\delta V}
+\leq C \sqrt{\delta V},
+\]
+when $n$ is sufficiently large.
+
+Recall that $V_{ij} = np_{ij}(1-p_{ij})/d$, and $p_{ij} \ll 1/2$, so $V_{ij}$ is increasing in $p_{ij}$,
+and thus increasing in $\eta_{ij}$. Since $|\eta_{ij}| \leq \epsilon/2 + \|h\|_\infty$, we have 
+\begin{align*}
+\delta V = V_+ - V_- &\leq \left(1 + \frac{\epsilon}{2} + \|h\|_\infty\right)
+\left(1 - \frac{d}{n}\left(1 + \frac{\epsilon}{2} + \|h\|_\infty\right)\right)\\
+&- \left(1 - \frac{\epsilon}{2} - \|h\|_\infty\right)
+\left(1 - \frac{d}{n}\left(1 - \frac{\epsilon}{2} - \|h\|_\infty\right)\right)\\
+&\leq \left(1 - \frac{d}{n}\right)(\epsilon + 2\|h\|_\infty)\\
+&<\epsilon + 2\|h\|_\infty
+< C d^{-2\alpha}.
+\end{align*}
+\todo{mention eps order in d, or lambda is roughly order 1}
+Therefore, we have
+\begin{align*}
+\mathbb{E} \| \bm{D} - \bm{B}\|_{\mathrm{op}}
+&\leq \frac{\sqrt{d}}{n} \mathbb{E} \|\bm{H}\|_{\mathrm{op}} + \mathbb{E} \|\bm{Z_D}\|_{\mathrm{op}}
++ \mathbb{E} \|\bm{Z_B}\|_{\mathrm{op}}\\
+&\leq \frac{\sqrt{d}}{n} \left(C d^{-1/2-\alpha}\right) + C \sqrt{\delta V} \\
+&= Cd^{-\alpha}.
+\end{align*}
+\todo{tie all the ineqs together}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % REFERENCES
