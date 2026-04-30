@@ -523,18 +523,71 @@ This completes the proof of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquar
 \subsection{Robustness against modifying $O(n\sqrt{d})$ edges}
 \label{sec:edge.robust}
 \todo{explain}
-\subsection{Approximation of the SDP of adjacency matrices with the SDP of deformed GOE matrices}
+
+\subsection{Robustness with perturbed SBMs}
+We first define the following more general class of random graph models, the \emph{perturbed SBM}. 
+We will then show that the same algorithm still works for this more general class of random graph
+models, which demonstrates the robustness of the algorithm and the SDP approach in general.
+\begin{definition}[Perturbed SBM]
+A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
+with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
+and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
+if for each pair of vertices $i, j \in [n]$, we have
+\[p_{ij} := \mathbb{P}((i,j) \in E) = \begin{cases}
+\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
+\end{cases}\]
+We write $\eta_{ij} = x_ix_j\epsilon/2 + h(\xi_i, \xi_j)$, and $h_{ij} = h(\xi_i, \xi_j)$ for short.
+\end{definition}
+
+We have the following weak recovery result for the perturbed SBM.
+\begin{theorem}[Weak recovery for perturbed SBM]
+\label{thm:perturbed.SBM}
+Let $G \sim \mathcal{G}(n, d, \epsilon)$ be a balanced, two-community $h$-perturbed SBM graph,
+and let $\lambda = \epsilon^2 d / 4$. Suppose there exists $\alpha > 0$, such that:
+\begin{enumerate}
+  \item[(a)] the perturbation $h$ satisfies that $\|h\|_\infty \leq C d^{-2\alpha}$,
+  \item[(b)] let $\bm{H}$ be the matrix with entries $H_{ij} = h(\xi_i, \xi_j)$, 
+  then $\mathbb{E}(\|\bm{H}\|_\text{op}) \leq Cnd^{-1/2 - \alpha}$.
+\end{enumerate}
+If $\lambda > 1$, then there exists some constant 
+$\Delta_4(\lambda) > 0$, such that with probability at least $1 - Cn^{-4}$ \todo{check the probability bound},
+the estimator $\hat{\bm{x}}^\mathrm{SDP}$ returned by \cref{alg:MS16} satisfies
+\[
+\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \Delta_4(\lambda).
+\]
+\end{theorem}
+\begin{remark}
+We can view the theorem above as a different notion of robustness of the algorithm, where instead of
+directly editing edges, we are allowed to perturb the edge probabilities by some random $h(\xi_i, \xi_j)$.
+The theorem shows that as long as the perturbation is not too large or too structured, the algorithm
+can still achieve weak recovery.
+\end{remark}
+
+\subsection{Comparison of the two notions of robustness}
+Note that this perturbation can lead to more than $O(n\sqrt{d})$ edge modifications in expectation.
+Consider 
+\todo{why this can have more than $O(n\sqrt{d})$ edge modifications}
+
+
+\section{Proof of weak recovery for perturbed SBMs (\cref{thm:perturbed.SBM})}
 \label{sec:sdp.approx}
-In this section, we briefly outline the main ingredients behind results like Lemmas \ref{lem:SDP.approx1} 
-and \ref{lem:SDP.approx2}, stating the key theorems used in their proofs without going into the details;
-we refer the reader to their original paper \cite{MS16} for complete arguments.
+Note that the proof of weak recovery in \cref{sec:weak.recovery} only uses the adjacency matrix of the graph 
+in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
+which we will discuss for the rest of this section,
+and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
+for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
+Thus, to show that the algorithm remains effective for the perturbed SBM,
+we only need to show that similar SDP approximation results hold for the perturbed SBM.
 
-In the following section, we will show how these ingredients can be combined to prove weak recovery 
-for a more general class of random graph models, demonstrating another layer of robustness.
+Therefore, in this section, we will demonstrate how to get a similar SDP approximation 
+result as in Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}, which will prove theorem 
+\ref{thm:perturbed.SBM}. The proofs of the lemmas will follow the exact same route, so they are
+ommitted here for brevity. We refer the reader to the original paper \cite{MS16} for more details.
 
-\subsubsection{Helper functions}
+\subsection{Helper functions}
 \label{sec:sdp.helper}
-\todo{check for sqrt d factor}
 The main idea of approximating the SDP of adjacency matrices with the SDP of deformed GOE matrices
 is to utilize the following two helper functions:
 \begin{definition}[$\mathcal{OPT}_k$]
@@ -575,9 +628,31 @@ $\bm{M} \in \mathbb{R}^{n \times n}$, we have
 \] 
 \end{theorem}
 \begin{remark}
-Clearly, $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ are symmetric matrices, so 
-the above bound applies to them.
-\todo{derive line 49 and 50}
+Using just the first inequality, we have
+\[
+\mathcal{OPT}_k (\bm{M}) + \mathcal{OPT}_k (-\bm{M}) \geq \left(1 - \frac{2}{k}\right) 
+\left(|\mathcal{SDP}(\bm{M})| + |\mathcal{SDP}(-\bm{M})|\right),
+\]
+so subtract by $\mathcal{SDP}(\bm{M})$ on every term and flipping signs, we get
+\[
+0 \leq \mathcal{SDP}(\bm{M}) - \mathcal{OPT}_k(\bm{M}) 
+\leq \frac{1}{k} \left(\left|\mathcal{SDP}(\bm{M})\right| + \left|\mathcal{SDP}(-\bm{M})\right|\right)
+\leq \frac{1}{k-2} \left(\mathcal{OPT}_k(\bm{M}) + \mathcal{OPT}_k(-\bm{M})\right).
+\]
+\end{remark}
+\begin{remark}
+Clearly, $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ are symmetric matrices. 
+Montanari and Sen showed that with probability at least $1 - Ce^{-n/C}$, we have
+(Theorem 8 equation 47 of \cite{MS16})
+\[
+\max \left\{\frac{1}{n\sqrt{d}}\mathcal{OPT}_k(\pm \bm{A}^\mathrm{cen}_{G}), 
+\frac{1}{n}\mathcal{OPT}_k(\pm \bm{B}(\lambda))\right\} \leq C,
+\]
+so in fact, for $\bm{M} = \bm{A}^\mathrm{cen}_{G}$ or $\bm{B}(\lambda)$, with probability 
+at least $1 - Ce^{-n/C}$, we have
+\[
+\left|\mathcal{SDP}(\bm{M}) - \mathcal{OPT}_k(\bm{M})\right| \leq \frac{C}{k}.
+\]
 \end{remark}
 
 \begin{theorem}[OPT vs $\Phi$, Lemma 3.2 of \cite{MS16}]
@@ -593,10 +668,19 @@ then for any $\beta > 0$, $k \in [n]$, and $\epsilon \in (0,1]$, there exists a 
 \]
 \end{theorem}
 \begin{remark}
+We can optimize the bound above over $\epsilon$ to obtain that when $\epsilon^*= \sqrt{k}/2\beta L
+\in (0,1]$, we have
+\[
+\left|\frac{1}{n}\Phi(\beta, k; \bm{M}) - \frac{1}{n}\mathcal{OPT}_k(\bm{M})\right| 
+\leq \frac{k}{\beta} \left(1 + \log\left(\frac{2C\beta L}{\sqrt{k}}\right)\right)
+= \frac{k}{\beta} \log \frac{C\beta L}{\sqrt{k}}.
+\]
+\end{remark}
+\begin{remark}
 In particular, we can show that (Lemma A.3 of \cite{MS16}) for any graph $G$ with bounded degree, we have 
 $\|\bm{A}^\mathrm{cen}_{G}\|_{\infty \to 2} \leq Cd\sqrt{n}$, and for any $\lambda \in \mathbb{R}$, 
-we have $\|\bm{B}(\lambda)\|_{\infty \to 2} \leq (C + |\lambda|)\sqrt{n}$, so the above bound 
-applies to $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$.
+we have $\|\bm{B}(\lambda)\|_{\infty \to 2} \leq (C + |\lambda|)\sqrt{n}$. so the above bound 
+applies to $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ with $L = Cd$ and $L = C + |\lambda|$, respectively.
 \end{remark}
 
 They further showed the following concentration result for $\Phi$.
@@ -618,59 +702,7 @@ We will defer the details of the interpolation step to the next section, where w
 family of random graph models, the perturbed SBMs. As it turns out, the interpolation step will be the
 most central step in extending the algorithm to the new setting.
 
-\subsection{Robustness with perturbed SBMs}
-We first define the following more general class of random graph models, the \emph{perturbed SBM}. 
-We will then show that the same algorithm still works for this more general class of random graph
-models, which demonstrates the robustness of the algorithm and the SDP approach in general.
-\begin{definition}[Perturbed SBM]
-A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
-with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
-i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
-and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
-if for each pair of vertices $i, j \in [n]$, we have
-\[p_{ij} := \mathbb{P}((i,j) \in E) = \begin{cases}
-\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
-\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
-\end{cases}\]
-We write $\eta_{ij} = x_ix_j\epsilon/2 + h(\xi_i, \xi_j)$, and $h_{ij} = h(\xi_i, \xi_j)$ for short.
-\end{definition}
-
-We have the following weak recovery result for the perturbed SBM.
-\begin{theorem}[Weak recovery for perturbed SBM]
-\label{thm:perturbed.SBM}
-Let $G \sim \mathcal{G}(n, d, \epsilon)$ be a balanced, two-community $h$-perturbed SBM graph,
-and let $\lambda = \epsilon^2 d / 4$. Suppose there exists $\alpha > 0$, such that:
-\begin{enumerate}
-  \item[(a)] the perturbation $h$ satisfies that $\|h\|_\infty \leq C d^{-2\alpha}$,
-  \item[(b)] let $\bm{H}$ be the matrix with entries $H_{ij} = h(\xi_i, \xi_j)$, 
-  then $\mathbb{E}(\|\bm{H}\|_\text{op}) \leq C d^{-1/2 - \alpha}$.
-\end{enumerate}
-If $\lambda > 1$, then there exists some constant 
-$\Delta_4(\lambda) > 0$, such that with probability at least $1 - Cn^{-4}$ \todo{check the probability bound},
-the estimator $\hat{\bm{x}}^\mathrm{SDP}$ returned by \cref{alg:MS16} satisfies
-\[
-\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \Delta_4(\lambda).
-\]
-\end{theorem}
-\todo{robustness remark}
-\todo{why this can have more than $O(n\sqrt{d})$ edge modifications}
-\begin{remark}
-Note that the proof of weak recovery in \cref{sec:weak.recovery} only uses the adjacency matrix of the graph 
-in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
-which we will discuss for the rest of this section,
-and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
-for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
-Thus, to show that the algorithm remains effective for the perturbed SBM,
-we only need to show that similar SDP approximation results hold for the perturbed SBM.
-Furthermore, note that all the theorems in \cref{sec:sdp.helper} for the centered adjacency matrix
-only require the graph to have a bounded degree, so they will still hold for the perturbed SBM.
-\end{remark}
-
-Therefore, in this section, we will first demonstrate how the interpolation step works
-works for the perturbed SBM, and then put everything together to get a similar SDP approximation 
-result as in Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}, which will prove theorem 
-\ref{thm:perturbed.SBM}.
-\subsubsection{Lindeberg Interpolation}
+\subsection{Lindeberg Interpolation}
 \label{sec:sdp.interp}
 The motivation of the interpolation step is the following Lindeberg interpolation lemma. \todo{cite}
 \begin{lemma}[Lindeberg interpolation]
@@ -726,14 +758,14 @@ for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
 \]
 \todo{calc C}
 
-\subsubsection{Coupling of Gaussian Matrices}
+\subsection{Coupling of Gaussian Matrices}
 For simplicity, we write $\bm{B}(\lambda) = \bm{B}$. To bound the difference between $F(\bm{D})$ 
 and $F(\bm{B}(\lambda))$, we first notice that, for all matrices $\bm{M}, \bm{M}' 
 \in \mathbb{R}^{n \times n}$, we have 
 \begin{align*}
 F(\bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
 \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
-&=
+&= 
 \end{align*}
 \todo{finish the argument above}
 Hence,
@@ -811,10 +843,10 @@ Then, writing
 \sigma^*_\text{col} = \max_{j \in [n]} \sqrt{\sum_{i=1}^n b_{ij}^2}, \quad
 \sigma^*_\text{elt} = \max_{i,j \in [n]} |b_{ij}|,
 \]
-for every $\epsilon \in (0,1/2]$, we have
+for every $s\in (0,1/2]$, we have
 \[
-\mathbb{E} \| \bm{X} \| \leq (1+\epsilon) \left(2\sigma^*_\text{row} 
-+ \frac{6}{\sqrt{\log(1+\epsilon)}} \sigma^*_\text{elt} \sqrt{\log n}\right)
+\mathbb{E} \| \bm{X} \| \leq (1+s) \left(2\sigma^*_\text{row} 
++ \frac{6}{\sqrt{\log(1+s)}} \sigma^*_\text{elt} \sqrt{\log n}\right)
 \]
 \end{theorem}
 In our case, writing $V_+ = \max_{i,j} V_{ij}$ \todo{edit V+- defn}, for all $i, j \in [n]$, we have
@@ -826,7 +858,7 @@ Thus, writing $\delta V := V_+ - V_-$, we have $\sigma^*_\text{col} \leq \sqrt{\
 $\sigma^*_\text{elt} \leq \sqrt{\delta V / n}$. Applying the above theorem,
 \[
 \mathbb{E} \|\bm{Z_D}\|,\ \mathbb{E} \|\bm{Z_B}\| 
-\leq (1+\epsilon) \left(2 + \frac{6}{\sqrt{\log(1+\epsilon)}} \sqrt{\frac{\log n}{n}} \right)\sqrt{\delta V}
+\leq (1+s) \left(2 + \frac{6}{\sqrt{\log(1+s)}} \sqrt{\frac{\log n}{n}} \right)\sqrt{\delta V}
 \leq C \sqrt{\delta V},
 \]
 when $n$ is sufficiently large.
@@ -854,10 +886,46 @@ Therefore, we have
 Combining with the bound from the Lindeberg interpolation step, we have
 \[
 \frac{1}{n} \left| \mathbb{E}F\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right) 
-- \mathbb{E}F(\bm{B})\right| \leq \frac{C\beta^2}{\sqrt{d}} + Cd^{-\alpha}.
+- \mathbb{E}F(\bm{B})\right| \leq C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right).
 \]
-\subsubsection{(tie all the ineqs together)}
-\todo{tie all the ineqs together}
+
+\subsection{Combining all the pieces}
+With the above bound between $\mathbb{E}F$ values, we first use the concentration of $\Phi$ from
+\cref{thm:Phi.conc} to show that taking $t = O(d^{-1/2})$, with probability at least $1 - Ce^{-n/C}$,
+we have
+\[
+\frac{1}{n} \left| \Phi\left(\beta, k; \frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right) 
+- \Phi(\beta, k; \bm{B})\right| \leq C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right).
+\]
+Then, \cref{thm:OPT.Phi} allows us to relate $\Phi$ and $\mathcal{OPT}_k$, which gives
+\begin{align*}
+\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
+- \mathcal{OPT}_k(\bm{B})\right| &\leq \frac{k}{\beta} \log \frac{C\beta d}{\sqrt{k}} 
++ \frac{k}{\beta} \log \frac{C\beta \lambda}{\sqrt{k}} + C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right)\\
+&\leq \frac{k}{\beta} \log \frac{C\beta d\lambda}{k} + C\frac{\beta^2}{\sqrt{d}} + C d^{-\alpha}.
+\end{align*}
+Note that this holds for all $\beta \in \mathbb{R}$, so taking $\beta = d^{1/6} k^{1/3}$, we have
+\begin{align*}
+\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
+- \mathcal{OPT}_k(\bm{B})\right| &\leq C d^{-1/6} k^{2/3} \log(Cd^{7/6} k^{-2/3} \lambda) + C d^{-\alpha}\\
+&\leq C d^{-1/6} k^{2/3} \log(Cd^{7/6} \lambda) + C d^{-\alpha},
+\end{align*}
+where we dropped the $k^{-2/3}$ term in the log since $k$ is a positive integer.
+
+Finally, \cref{thm:SDP.OPT} links $\mathcal{OPT}_k$ and $\mathcal{SDP}$, which gives
+\[
+\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
+- \mathcal{SDP}(\bm{B})\right| \leq \frac{C}{k} + C d^{-1/6} k^{2/3} \log(Cd^{7/6} \lambda) + C d^{-\alpha}.
+\]
+Taking $k = d^{1/10}$, we have
+\[
+\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
+- \mathcal{SDP}(\bm{B})\right| \leq C \frac{\log(Cd^{7/6}\lambda)}{d^{1/10}} + C d^{-\alpha}.
+\]
+Crucially, the above bound goes to zero as $d \to \infty$, which allows us to conclude that the same
+algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \hfill $\blacksquare$
+
+\section{Extension to node robustness}
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % REFERENCES
