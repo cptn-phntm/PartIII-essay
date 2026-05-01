@@ -25,7 +25,7 @@
 % The title page does not count towards the total page number.
 % You will be assigned an Essay Candidate Number (ECN) at the beginning of Easter Term.
 \title{Robust Estimation of Graph Statistics}
-\ecn{E123X}
+\ecn{E746C}
 
 % DATE
 %To remove the date from the front page of the final version, UNCOMMENT the line below.
@@ -566,9 +566,17 @@ can still achieve weak recovery.
 \end{remark}
 
 \subsection{Comparison of the two notions of robustness}
-Note that this perturbation can lead to more than $O(n\sqrt{d})$ edge modifications in expectation.
-Consider 
-\todo{why this can have more than $O(n\sqrt{d})$ edge modifications}
+Note that the perturbation can lead to more than $O(n\sqrt{d})$ edge modifications in expectation.
+
+Roughly speaking, the operator norm bound on $\bm{H}$ in condition (b) of \cref{thm:perturbed.SBM} 
+controls the degree of structure in the perturbation. For example, if $h(\xi_i, \xi_j)$'s are i.i.d.,
+then $\mathbb{E}\|\bm{H}\|_\text{op} \sim O(\sqrt{n})$, and since $d \ll n$, this bound is easily satisfied,
+with individual edge perturbations of order $O(d^{-2\alpha})$ to satisfy the $L_\infty$ bound in condition (a).
+On the other hand, if $h(\xi_i, \xi_j)$'s are highly structured, say $\bm{H} = \bm{u}\bm{u}^\top$ 
+for some vector $\bm{u} \in \mathbb{R}^n$, then $\|\bm{H}\|_\text{op} = O(n)$, so the individual
+edge perturbations must be of order $O(d^{-1/2 - \alpha})$.
+\todo{flesh out the above argument with more citations}
+\todo{concrete example with more than $O(n\sqrt{d})$ edge modifications}
 
 
 \section{Proof of weak recovery for perturbed SBMs (\cref{thm:perturbed.SBM})}
@@ -763,11 +771,29 @@ For simplicity, we write $\bm{B}(\lambda) = \bm{B}$. To bound the difference bet
 and $F(\bm{B}(\lambda))$, we first notice that, for all matrices $\bm{M}, \bm{M}' 
 \in \mathbb{R}^{n \times n}$, we have 
 \begin{align*}
-F(\bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n M_{ij}
+F(\bm{M}) &= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n 
+\bm{M}_{ij} \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
+&= \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n \bm{M}'_{ij}
+\langle \bm{\sigma}_i, \bm{\sigma}_j \rangle + \beta \sum_{i,j=1}^n (\bm{M}_{ij} - \bm{M}'_{ij}) 
 \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
-&= 
+&= F(\bm{M}') + \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \sum_{i,j=1}^n 
+(\bm{M}_{ij} - \bm{M}'_{ij}) \langle \bm{\sigma}_i, \bm{\sigma}_j \rangle\right) d\nu(\bm{\sigma})\right)\\
+&= F(\bm{M}') + \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta \operatorname{Tr} 
+(\bm{\Sigma} (\bm{M} - \bm{M}') \bm{\Sigma}^\top) \right) d\nu(\bm{\sigma})\right)\\
+&\leq F(\bm{M}') + \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(\beta 
+\|\bm{M} - \bm{M}'\|_{\mathrm{op}} \operatorname{Tr} (\bm{\Sigma}^\top \bm{\Sigma}) \right) 
+d\nu(\bm{\sigma})\right)\\
+&= F(\bm{M}') + \frac{1}{\beta} \log \left(\int_{(\mathbb{S}^{k-1})^n} \exp\left(n\beta 
+\|\bm{M} - \bm{M}'\|_{\mathrm{op}}\right) d\nu(\bm{\sigma})\right)\\
+&= F(\bm{M}') + n \|\bm{M} - \bm{M}'\|_{\mathrm{op}}.
 \end{align*}
-\todo{finish the argument above}
+where we wrote $\bm{\Sigma} := (\bm{\sigma}_1, \dots, \bm{\sigma}_n) \in (\mathbb{S}^{k-1})^n$,
+and used the fact that for $\bm{A}$ symmetric and $\bm{B} \succeq 0$, since $\bm{A} \preceq 
+\|\bm{A}\|_{\mathrm{op}} \bm{I}$, we have
+\[
+\operatorname{Tr}(\bm{A}\bm{B}) \leq \operatorname{Tr}(\|\bm{A}\|_{\mathrm{op}} \bm{I} \bm{B})
+\leq \|\bm{A}\|_{\mathrm{op}} \operatorname{Tr}(\bm{B}).
+\]
 Hence,
 \[
 \left| \frac{1}{n}F(\bm{M}) - \frac{1}{n}F(\bm{M}')\right| 
