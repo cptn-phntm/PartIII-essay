@@ -9,6 +9,7 @@
 \usepackage{amsfonts,amssymb,amsthm,amsmath,amscd}
 \usepackage{bm,bbm}
 \usepackage{enumerate}
+\usepackage{enumitem}
 \usepackage{parskip}
 \usepackage{tikz}
 \usepackage{todonotes}
@@ -951,7 +952,227 @@ Taking $k = d^{1/10}$, we have
 Crucially, the above bound goes to zero as $d \to \infty$, which allows us to conclude that the same
 algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \hfill $\blacksquare$
 
-\section{Extension to node robustness}
+\section{Other applications of SDP in robust community detection}
+In this section, we briefly discuss some other applications of SDP in different robust community detection
+settings. 
+
+First, we will discuss the monotone adversary model in the exact recovery setting, which
+is one of the earliest applications of SDP in robust community detection. We will see that the main
+appeal of SDP is its ``bounded sensitivity'' property, which we will explain in more details below.
+
+Then, 
+
+\todo{introductory paragraph}
+\subsection{Monotone adversary}
+\todo{frame the problem more exactly}
+One of the earliest works on robust community detection is by Feige and Kilian \cite{FK01} in 2001.
+They considered the following monotone adversary model.
+\begin{definition}[Monotone adversary model]
+\label{def:monotone}
+Let $G$ be a balanced, two-community SBM. A monotone adversary can look at the realised graph $G$
+and the community labels $x$ of the vertices, and they are allowed to make the following changes:
+\begin{enumerate}
+    \item[(a)] Add edges between vertices in the same community.
+    \item[(b)] Remove edges between vertices in different communities.
+\end{enumerate}
+\end{definition}
+It may seem that the monotone adversary can only make the problem easier, since they are either:
+(a), strengthening the community structure; or (b), removing inter-community connections. However,
+certain naive algorithms, already fail under this model.
+
+\subsubsection{Naive example: common neighbors algorithm}
+For simplicity, we write $p = (d/n)(1 + \epsilon / 2)$ for the intra-community edge probability, 
+and $q = (d/n)(1 - \epsilon / 2)$ for the inter-community edge probability. Consider the following
+naive algorithm, taking in two nodes, and outputting whether they are in the same community or not.
+\begin{algorithm}[Common neighbors algorithm]
+\label{alg:degree}
+\leavevmode
+\begin{enumerate}[label=\textbf{Step \arabic*.}, align=left]
+  \item[0.] Take inputs: graph $G$ on $n$ vertices; $i, j \in [n]$: the two vertices to investigate;
+  $d$: threshold for degree comparison.
+  \item[1.] Count the number of common neighbors $n_{ij}$ of $i$ and $j$.
+  \item[2.] Output ``same community'' if $n_{ij}/n \geq r(p,q)$, and ``different communities'' otherwise.
+\end{enumerate}
+\end{algorithm}
+The $r(p,q)$ threshold is a constant that depends on $p$ and $q$. The idea behind the algorithm is
+that, for $i$ and $j$ in the same community, the expected number of common neighbors is 
+\[
+\left(\frac{n}{2} - 2\right) p^2 + \frac{n}{2} q^2 \approx \frac{p^2 + q^2}{2} n,
+\]
+where the first term counts their common neighbors in their community, and the second term counts
+their common neighbors in the other community. On the other hand, for $i$ and $j$ in different
+communities, the expected number of common neighbors is
+\[
+(n-2) pq \approx (pq)n.
+\]
+Since $p^2 + q^2 > 2pq$ for $p > q$, we can choose $r(p,q) \in (pq, (p^2 + q^2)/2)$, so the algorithm
+works with high probability.
+
+Clearly, the algorithm above relies on the exact values of $p$ and $q$ heavily. The monotone adversary
+can easily break this. For example, it can add all the edges in both communities. Then, for any two 
+vertices in different communities, their expected number of common neighbors is $(n-2) q \approx qn$.
+To combat this, we might want to instead choose $r(p,q) \in (q, (p^2 + q^2)/2)$, but this can be 
+impossible, as $q$ can be larger than $(p^2 + q^2)/2$ when $p$ and $q$ are small, which is the 
+sparse regime we are interested in. Thus, the common neighbors algorithm is not robust to the
+monotone adversary.
+
+\subsubsection{SDP-based robust algorithm}
+Now, we consider the following SDP problem.
+\begin{align*}
+\tilde{h}(G) = \mathrm{maximize}\quad &\langle \bm{A}_G, \bm{X} \rangle \\
+\mathrm{subject}\ \mathrm{to}\quad &\bm{X} \succeq 0,\\
+&\bm{X}_{ii} = 1 \text{ for all } i \in [n],\\
+&\sum_{i,j \in [n]} \bm{X}_{ij} = 0.
+\end{align*}
+Note that the above SDP is very similar to the SDP we considered in the previous section, except that
+we replaced $\bm{A}^\mathrm{cent}_{G}$, the centered adjacency matrix, with $\bm{A}_G$, the original
+adjacency matrix, and we enforce that the sum of all entries of $\bm{X}$ is zero.
+
+To gain some intuition behind this SDP, let us consider a set of balanced community labels 
+$\hat{x} \in \{\pm 1\}^n$. It is easy to see that the matrix $\hat{\bm{X}} := \hat{x} \hat{x}^\top$ 
+is a feasible solution to the above SDP. Plugging in $\hat{\bm{X}}$ into the objective, we have
+\begin{align*}
+\langle \bm{A}_G, \hat{\bm{X}} \rangle &= \sum_{i,j \in [n]} \bm{A}_{G,ij} \hat{x}_i \hat{x}_j
+= \sum_{i,j \in E} \hat{x}_i \hat{x}_j\\
+&= \sum_{i,j \text{ in same community}} 1 + \sum_{i,j \text{ in different communities}} (-1)\\
+&= 2\times \text{number of edges within communities} - 2\times \text{number of edges between communities}\\
+&= 2|E| - 4\times\text{number of edges between communities}.
+\end{align*}
+
+Thus, if we maximize the above SDP over all balanced community labels, we are essentially trying to
+minimize the number of edges between communities. By making the SDP relaxation, we make the problem
+tractable. Writing $h(G) := |E|/2 - \tilde{h}(G)/4$, $b(G) := \text{number of edges between communities}$,
+then we see that $h(G) \leq b(G)$ is an SDP lower bound on the number of edges between communities. 
+In fact, we often have $h(G) = b(G)$, by the following result.
+\begin{lemma}[Lemma 19 of \cite{FK01}]
+\label{lem:SBM.hb}
+Let $G$ be a balanced, two-community SBM with edge probabilities $p$ and $q$ as defined above. 
+If $p - q \geq C \sqrt{p \log n / n}$ for a sufficiently large constant $C$, then with
+probability at least $1 - 2 n^{-5}$, we have $h(G) = b(G)$.
+\end{lemma}
+Furthermore, it can be shown that modifying one edge of $G$ preserves the equality $h(G) = b(G)$ 
+with high probability.
+\begin{lemma}[Lemma 20 of \cite{FK01}]
+\label{lem:modSBM.hb}
+Let $G$ be a graph satisfying $h(G) = b(G)$. Let $G'$ be the graph obtained by modifying one edge of
+$G$ (adding a new edge or removing an existing one). Then, with probability at least
+$1 - n^{-1 + o(1)}$, we have $h(G') = b(G')$ for all possible modifications.
+\end{lemma}
+This inspires the following algorithm.
+\todo{cite FK, Boppana}
+\begin{algorithm}[SDP-based exact recovery under monotone adversary]
+\label{alg:monotone.SDP}
+\leavevmode
+\begin{enumerate}
+  \item[0.] Take input: graph $G$ on $n$ vertices.
+  \item[1.] For $i \in [n]\backslash \{1\}$, let $G_i$ be the graph obtained by ``toggling'' the edge 
+  $(1,i)$: i.e. if $G$ contains the edge $(1,i)$, remove it; otherwise, add it.
+  \item[2.] Writing $S_1 = \{1\} \cup \{i \in [n]\backslash \{1\}: h(G_i) = h(G)\}$,
+  output the community labels $\hat{\bm{x}}$ as follows:
+  \[
+  \hat{\bm{x}}_i = \begin{cases}
+1 & \text{if } i \in S_1,\\
+-1 & \text{if } i \notin S_1.
+\end{cases}
+  \]
+\end{enumerate}
+\end{algorithm}
+We can show that this algorithm recovers the true community labels with high probability, 
+and is robust to any monotone adversary.
+\begin{theorem}[Exact recovery under monotone adversary, Theorem 5 of \cite{FK01}] 
+\label{thm:monotone}
+Let $G$ be a balanced, two-community SBM with intra-community edge probability $p$ and 
+inter-community edge probability $q$, and $C$ be a sufficiently large constant. 
+If $p - q \geq C \sqrt{p \log n / n}$, then with high probability, the above algorithm
+recovers the true community labels, and is robust to any monotone adversary.
+\end{theorem}
+\begin{proof}
+We work under the event that $h(G) = b(G)$, and that for all $i \in [n]\backslash \{1\}$, 
+$h(G_i) = b(G_i)$. By Lemmas \ref{lem:SBM.hb} and \ref{lem:modSBM.hb}, this event occurs with high 
+probability.
+
+If $1$ and $i$ are in the same community, then the edge $(1,i)$ is an intra-community edge, and
+will not affect the inter-community edge count $b$, so we have $b(G_i) = b(G)$. On the other hand, 
+if $1$ and $i$ are in different communities, then the edge $(1,i)$ is indeed an inter-community edge,
+so $b(G_i) = b(G) \pm 1$, so $h(G_i) \neq h(G)$. Hence, we've shown exact recovery.
+
+To show robustness against the monotone adversary, it suffices to show the following:
+\begin{lemma}[Monotone modifications preserve $h = b$]
+\label{lem:monotone.robust}
+Let $G$ be a balanced SBM satisfying $h(G) = b(G)$. Let $G'$ be the graph obtained by making one 
+monotone modification to $G$ (i.e. adding an edge between vertices in the same community, or removing
+an edge between vertices in different communities). Then, we have $h(G') = b(G')$.
+\end{lemma}
+Note that this lemma is an exact statement, so we can make arbitrary many monotone modifications.
+Combining this lemma with Lemmas \ref{lem:SBM.hb} and \ref{lem:modSBM.hb}, we have that $h(G) = b(G)$,
+and $h(G_i) = b(G_i)$ for all $i \in [n]\backslash \{1\}$ still holds with high probability after
+any number of monotone modifications, and thus the algorithm still works.
+
+To prove this lemma, the following three properties of $h$ will be helpful:
+
+- \textbf{Lower bound of $b$:} Since $b(G)$ is the value of the objective at a feasible solution to 
+the SDP, we have
+\[h(G) \leq b(G).\]
+
+- \textbf{Increasing:} Writing $G^+$ for the graph obtained by adding an edge $(u,v)$ to $G$, 
+and $\bm{X}^+$, $\bm{X}$ for the optimal solutions to the SDP for $G^+$ and $G$ respectively, we have
+\begin{align*}
+h(G^+) - h(G) &= \left(\frac{|E(G^+)|}{2} - \frac{\tilde{h}(G^+)}{4}\right) 
+- \left(\frac{|E(G)|}{2} - \frac{\tilde{h}(G)}{4}\right)\\
+&= \frac{1}{2} - \frac{1}{4} \left(\langle \bm{A}_{G^+}, \bm{X}^+ \rangle - \langle \bm{A}_G, \bm{X} \rangle\right)\\
+&\geq \frac{1}{2} - \frac{1}{4} \left(\langle \bm{A}_{G^+}, \bm{X} \rangle - \langle \bm{A}_G, \bm{X} \rangle\right)\\
+&= \frac{1}{2} - \frac{1}{4} (\bm{X}_{uv} + \bm{X}_{vu}) \geq 0,
+\end{align*}
+where we used the fact that $|\bm{X}|_\infty \leq 1$. So $h(G^+) \geq h(G)$.
+
+- \textbf{Bounded increments:} Proceeding in exactly the same way as above, we have
+\begin{align*}
+h(G^+) - h(G) &= \frac{1}{2} - \frac{1}{4} \left(\langle \bm{A}_{G^+}, \bm{X}^+ \rangle 
+- \langle \bm{A}_G, \bm{X} \rangle\right)\\
+&\leq \frac{1}{2} - \frac{1}{4} \left(\langle \bm{A}_{G^+}, \bm{X^+} \rangle - \langle \bm{A}_G, \bm{X^+} \rangle\right)\\
+&= \frac{1}{2} - \frac{1}{4} (\bm{X}_{uv} + \bm{X}_{vu}) \leq 1,
+\end{align*}
+where we again used the fact that $|\bm{X}|_\infty \leq 1$. So $h(G^+) \leq h(G) + 1$.
+
+Now, we are ready to prove the lemma. We call the bisection of $G$ that achieves the optimal value
+$b(G)$ the \emph{optimal bisection} of $G$, and the two communities created by this bisection the 
+\emph{optimal communities} of $G$.
+
+If $G^+$ is obtained by adding an edge between vertices in the
+same community, the number of edges between any two balanced communities can only increase. 
+In particular, the number of edges between the optimal communities of $G$ remains the same, 
+so this bisection remains optimal for $G^+$. Thus, $b(G^+) = b(G)$.
+By the lower bound property, we have $h(G^+) \leq b(G^+) = b(G) = h(G)$, and by the increasing
+property, we have $h(G^+) \geq h(G)$. Hence, all the inequalities are equalities, and we have 
+$h(G^+) = b(G^+)$.
+
+On the other hand, if $G^-$ is obtained by removing an edge between vertices in different communities,
+the number of edges between any two balanced communities can at most decrease by one.
+In particular, the number of edges between optimal communities of $G$ also decreases by one, so
+this bisection remains optimal for $G^-$. Thus, $b(G^-) = b(G) - 1$.
+By the lower bound property, we have $h(G^-) \leq b(G^-) = b(G) - 1 = h(G) - 1$, and by the bounded
+increments property, we have $h(G^-) \geq h(G) - 1$. Hence, all the inequalities are equalities, 
+and we have $h(G^-) = b(G^-)$.
+
+Therefore, $h(G) = b(G)$ is preserved under any monotone modification, which proves the lemma, and thus the theorem.
+\end{proof}
+\begin{remark}
+Even though monotone adversaries are quite limited in their power, the above result is still
+interesting in that it does not require any knowledge of the parameters $p$ and $q$. Furthermore,
+it highlights the fundamental reason why SDP-based algorithms can be robust: they are increasing, 
+but have bounded increments, so small modifications to the graph does not change the output by much.
+In this particular case, by leveraging the fact that the optimal objective value exactly correlates
+with an important graph statistic (the minimal number of edges between communities) with high probability,
+we are able to strengthen the robustness guarantee to hold for any number of monotone modifications.
+In later cases, we will not be able to achieve such a strong guarantee, but this ``bounded difference''
+property of SDP will still be crucial. For example, in section \todo{ref}, we will relate 
+$\mathcal{SDP}(\bm{A}_G^\text{cent})$ to the SDP value of some Gaussian matrix, which will be the
+central step to developing the robust algorithm for that particular scenario. 
+\end{remark}
+
+\subsection{Other robust community detection results}
+
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
 % REFERENCES

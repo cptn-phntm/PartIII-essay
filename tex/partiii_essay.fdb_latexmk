@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1777642102.4012 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1777642103.0696 0
+["pdflatex"] 1778013445.86766 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778013446.56833 0
   "/Users/jerry/Library/texlive/2026/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.657pk" 1776385807.3993 7808 af288bf8d935719c3f8688e7f7fcc7a5 ""
-  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1777642102.2777 53818 f06bf1c2287150b8b942990eda5b1ae6 ""
+  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778013445.76801 67027 0c318fb754353516939870bef1d56e3c ""
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -145,6 +145,7 @@
   "/usr/local/texlive/2026/texmf-dist/tex/latex/cleveref/cleveref.sty" 1525128982 329481 7fc6b003158402a4c694bc0a1b729308 ""
   "/usr/local/texlive/2026/texmf-dist/tex/latex/comment/comment.sty" 1472166125 10197 204f75d5d8d88aa345a8c402e879e63b ""
   "/usr/local/texlive/2026/texmf-dist/tex/latex/eepic/epic.sty" 1247274248 25873 0e813d2f6e266780f0cedef5eb5e2525 ""
+  "/usr/local/texlive/2026/texmf-dist/tex/latex/enumitem/enumitem.sty" 1738874546 52272 63d293bc0d496619edb57585740861a2 ""
   "/usr/local/texlive/2026/texmf-dist/tex/latex/epstopdf-pkg/epstopdf-base.sty" 1579991033 13886 d1306dcf79a944f6988e688c1785f9ce ""
   "/usr/local/texlive/2026/texmf-dist/tex/latex/etoolbox/etoolbox.sty" 1759437024 46885 8953c67ffba03252c6090aa19568b8ba ""
   "/usr/local/texlive/2026/texmf-dist/tex/latex/geometry/geometry.sty" 1772916678 41904 7711079366884e0d15963c9d40019853 ""
@@ -184,8 +185,8 @@
   "/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1776279145 5573038 b99aad5e4898a9034e953632f940512b ""
   "/usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1776279137 3636772 a727b2fbe76c0a23d7876f8d32aa8c56 ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
-  "partiii_essay.aux" 1777642103.01972 10894 c498ab182a3b76e8326629289936247b "pdflatex"
-  "partiii_essay.tex" 1777642102.2777 53818 f06bf1c2287150b8b942990eda5b1ae6 ""
+  "partiii_essay.aux" 1778013446.51906 13256 4b5ff766a99e4dec953e6cc59b385ee4 "pdflatex"
+  "partiii_essay.tex" 1778013445.76801 67027 0c318fb754353516939870bef1d56e3c ""
   (generated)
   "partiii_essay.aux"
   "partiii_essay.log"

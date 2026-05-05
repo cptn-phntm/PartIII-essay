@@ -43,6 +43,8 @@ INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/bbm-macros/bbm.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/bbm-macros/bbm.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/tools/enumerate.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/tools/enumerate.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/enumitem/enumitem.sty
+INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/enumitem/enumitem.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/parskip/parskip.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/parskip/parskip.sty
 INPUT /usr/local/texlive/2026/texmf-dist/tex/latex/kvoptions/kvoptions.sty
