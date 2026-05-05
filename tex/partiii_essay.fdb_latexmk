@@ -1,7 +1,7 @@
 # Fdb version 4
-["pdflatex"] 1778013445.86766 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778013446.56833 0
+["pdflatex"] 1778020323.48642 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778020324.22441 0
   "/Users/jerry/Library/texlive/2026/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.657pk" 1776385807.3993 7808 af288bf8d935719c3f8688e7f7fcc7a5 ""
-  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778013445.76801 67027 0c318fb754353516939870bef1d56e3c ""
+  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778020323.41385 66865 7832719d50b0ce9bcb494877b2a5265a ""
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -185,10 +185,12 @@
   "/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1776279145 5573038 b99aad5e4898a9034e953632f940512b ""
   "/usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1776279137 3636772 a727b2fbe76c0a23d7876f8d32aa8c56 ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
-  "partiii_essay.aux" 1778013446.51906 13256 4b5ff766a99e4dec953e6cc59b385ee4 "pdflatex"
-  "partiii_essay.tex" 1778013445.76801 67027 0c318fb754353516939870bef1d56e3c ""
+  "partiii_essay.aux" 1778020324.17378 13761 b7c0b0e7b9de283ab68690958a6e6d38 "pdflatex"
+  "partiii_essay.tex" 1778020323.41385 66865 7832719d50b0ce9bcb494877b2a5265a ""
+  "partiii_essay.toc" 1778020324.17482 2422 488bf823d7f22e245fdec03988f97c73 "pdflatex"
   (generated)
   "partiii_essay.aux"
   "partiii_essay.log"
   "partiii_essay.pdf"
+  "partiii_essay.toc"
   (rewritten before read)
