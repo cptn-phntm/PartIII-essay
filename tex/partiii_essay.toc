@@ -1,28 +1,27 @@
-\contentsline {section}{\numberline {1}Introduction}{2}{}%
-\contentsline {subsection}{\numberline {1.1}Background}{2}{}%
-\contentsline {subsection}{\numberline {1.2}Structure of this paper}{2}{}%
-\contentsline {subsection}{\numberline {1.3}Notations}{2}{}%
-\contentsline {section}{\numberline {2}Existing robustness models in community detection}{2}{}%
-\contentsline {subsection}{\numberline {2.1}Monotone adversary, exact recovery}{2}{}%
-\contentsline {subsubsection}{\numberline {2.1.1}Naive example: common neighbors algorithm}{3}{}%
-\contentsline {subsubsection}{\numberline {2.1.2}SDP-based robust algorithm}{3}{}%
-\contentsline {subsection}{\numberline {2.2}Edge-robust weak recovery}{7}{}%
-\contentsline {subsection}{\numberline {2.3}From edge-robust to node-robust}{7}{}%
-\contentsline {subsection}{\numberline {2.4}Degree heterogeneity}{7}{}%
-\contentsline {subsection}{\numberline {2.5}Outlier nodes}{7}{}%
-\contentsline {section}{\numberline {3}SDP-based algorithm for weak recovery at the KS threshold}{7}{}%
-\contentsline {subsection}{\numberline {3.1}Algorithm}{7}{}%
-\contentsline {section}{\numberline {4}Proof of weak recovery (Theorem \ref {thm:MS16.recovery})}{7}{}%
-\contentsline {subsection}{\numberline {4.1}Step 1: $\bm {X}^*$ contains nontrivial information about $\bm {x}$}{8}{}%
-\contentsline {subsection}{\numberline {4.2}Step 2: There exists ``good'' label estimators among $\{\hat {\bm {x}}^{(i,j)}\}_{i,j \in [n]}$}{9}{}%
-\contentsline {subsection}{\numberline {4.3}Step 3: A ``good'' estimator can be found with $G_\mathrm {eval}$}{11}{}%
-\contentsline {section}{\numberline {5}Robustness of the SDP}{14}{}%
-\contentsline {subsection}{\numberline {5.1}Robustness against modifying $O(n\sqrt {d})$ edges}{14}{}%
-\contentsline {subsection}{\numberline {5.2}Robustness with perturbed SBMs}{14}{}%
-\contentsline {subsection}{\numberline {5.3}Comparison of the two notions of robustness}{15}{}%
-\contentsline {section}{\numberline {6}Proof of weak recovery for perturbed SBMs (\cref {thm:perturbed.SBM})}{15}{}%
-\contentsline {subsection}{\numberline {6.1}Helper functions}{15}{}%
-\contentsline {subsection}{\numberline {6.2}Lindeberg Interpolation}{17}{}%
-\contentsline {subsection}{\numberline {6.3}Coupling of Gaussian Matrices}{19}{}%
-\contentsline {subsection}{\numberline {6.4}Combining all the pieces}{21}{}%
-\contentsline {section}{\numberline {7}Conclusion and Future Directions}{22}{}%
+\contentsline {section}{\numberline {1}Introduction}{3}{}%
+\contentsline {subsection}{\numberline {1.1}Background}{3}{}%
+\contentsline {subsection}{\numberline {1.2}Evaluating recovery}{3}{}%
+\contentsline {subsection}{\numberline {1.3}Semidefinite programming}{4}{}%
+\contentsline {subsection}{\numberline {1.4}Structure of this essay}{4}{}%
+\contentsline {section}{\numberline {2}Existing robustness models in community detection}{5}{}%
+\contentsline {subsection}{\numberline {2.1}Monotone adversary, exact recovery}{5}{}%
+\contentsline {subsubsection}{\numberline {2.1.1}Naive example: common neighbors algorithm}{5}{}%
+\contentsline {subsubsection}{\numberline {2.1.2}SDP-based robust algorithm}{6}{}%
+\contentsline {subsection}{\numberline {2.2}Edge-robust weak recovery}{9}{}%
+\contentsline {subsection}{\numberline {2.3}From edge-robust to node-robust}{12}{}%
+\contentsline {subsection}{\numberline {2.4}Degree heterogeneity}{12}{}%
+\contentsline {subsection}{\numberline {2.5}Outlier nodes}{12}{}%
+\contentsline {section}{\numberline {3}Proof of weak recovery (Theorem \ref {thm:MS16.recovery})}{12}{}%
+\contentsline {subsection}{\numberline {3.1}Step 1: $\bm {X}^*$ contains nontrivial information about $\bm {x}$}{13}{}%
+\contentsline {subsection}{\numberline {3.2}Step 2: There exists ``good'' label estimators among $\{\hat {\bm {x}}^{(i,j)}\}_{i,j \in [n]}$}{14}{}%
+\contentsline {subsection}{\numberline {3.3}Step 3: A ``good'' estimator can be found with $G_\mathrm {eval}$}{16}{}%
+\contentsline {subsection}{\numberline {3.4}Robustness against modifying $O(n\sqrt {d})$ edges}{19}{}%
+\contentsline {section}{\numberline {4}Robustness of the SDP}{19}{}%
+\contentsline {subsection}{\numberline {4.1}Robustness with perturbed SBMs}{19}{}%
+\contentsline {subsection}{\numberline {4.2}Comparison of the two notions of robustness}{20}{}%
+\contentsline {section}{\numberline {5}Proof of weak recovery for perturbed SBMs (\cref {thm:perturbed.SBM})}{20}{}%
+\contentsline {subsection}{\numberline {5.1}Helper functions}{20}{}%
+\contentsline {subsection}{\numberline {5.2}Lindeberg Interpolation}{22}{}%
+\contentsline {subsection}{\numberline {5.3}Coupling of Gaussian Matrices}{24}{}%
+\contentsline {subsection}{\numberline {5.4}Combining all the pieces}{26}{}%
+\contentsline {section}{\numberline {6}Conclusion and Future Directions}{27}{}%

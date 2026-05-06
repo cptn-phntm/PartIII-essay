@@ -101,39 +101,116 @@
 \begin{document}
 \maketitle
 \tableofcontents
+\listoftodos
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 % START WRITING YOUR ESSAY HERE
 \section{Introduction}
-% need: exact / partial / weak recovery
 \subsection{Background}
-\subsection{Structure of this paper}
-\subsection{Notations}
-\begin{definition}
-A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community stochastic block model graph
-with $V = [n]$ and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$.
-For each pair of vertices $i, j \in [n]$, we have
+Nowadays, many datasets can be naturally represented as graphs, and it is often of interest to study
+the underlying structure of these graphs. One important example is the problem of community detection, 
+where we want to find clusters of nodes that are more densely connected to each other than to the
+rest of the graph. The stochastic block model (SBM) is a popular random graph model that captures
+this community structure, and has been widely studied in the literature. It randomly assigns each 
+vertex to one of $k$ communities, and then generates edges independently between vertices with 
+probabilities that depend on their community memberships. This model is simple yet rich enough to
+capture many real-world phenomena, and has been used as a benchmark for testing community detection.
+In this paper, we will focus on community detection under the balanced, two-community SBM, which
+we define below.
+\begin{definition}[Balanced, two-community SBM]
+A graph $G \sim \mathcal{G}(n, p, q)$ is a balanced, two-community stochastic block model with 
+$V = [n]$ and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$
+if, for each pair of vertices $i, j \in [n]$, we have
 \[\mathbb{P}((i,j) \in E) = \begin{cases}
-\frac{d}{n}(1+\frac{\epsilon}{2}) & \text{if } x_i = x_j, \\
-\frac{d}{n}(1-\frac{\epsilon}{2}) & \text{if } x_i \neq x_j.
+p & \text{if } x_i = x_j, \\
+q & \text{if } x_i \neq x_j.
 \end{cases}\] 
 \end{definition}
-\begin{definition}
-The set of positive semidefinite matrices with diagonal entries equal to $1$ is denoted by
-\[\mathcal{PSD}_1(n) = \{\bm{X} \in \mathbb{R}^{n \times n} : \bm{X} \succeq 0, \bm{X}_{ii} = 1 \text{ for all } i \in [n]\}.\]
-\end{definition}
-\begin{definition}
-Given a matrix $\bm{M} \in \mathbb{R}^{n \times n}$, we define $\mathcal{SDP}(\bm{M}) := \max_{\bm{X} \in \mathcal{PSD}_1(n)} \langle \bm{M}, \bm{X} \rangle$.
-\end{definition}
-\begin{definition}
-Given a graph $G$, let $\bm{A}_G$ be its adjacency matrix, and define $\bm{A}_G^{\mathrm{cent}} = \bm{A}_G - \mathbb{E}[\bm{A}_G]$.
-For $G \sim \mathcal{G}(n, d, \epsilon)$, we have $\mathbb{E}[\bm{A}_G] = \frac{d}{n}\bm{1}\bm{1}^\top$.
-\end{definition}
+Usually, we have $p > q$, so that vertices in the same community are more likely to be connected 
+than those in different communities, demonstrating the community structure.
 
+In practice, however, real data never perfectly follows any theoretical model. Randomness or corruption
+in the data can lead to nontrivial deviations, so it is important to design algorithms that are 
+robust to such perturbations. In the context of community detection, this means that we want to
+develop algorithms that can still recover the underlying community structure in some capacity,
+even under these contaminations. Thus, in this essay, we will study algorithms that can achieve
+robust recovery of the community labels under various perturbation models. In particular, 
+we focus on algorithms based on semidefinite programming (SDP), which has been used to tackle a wide
+range of robustness problems.
+
+\subsection{Evaluating recovery}
+In our setting, we can measure the recovery quality by the correlation between the true community 
+labels and the estimated community labels. Suppose $\hat{\bm{x}}$ is the estimated community label 
+vector, then we can define the correlation as the inner product
+$\langle \hat{\bm{x}}, \bm{x} \rangle / n$. If we guess the labels randomly, then the expected 
+correlation is zero. We define the idea of recovery quality as follows, following \cite{Abbe23}.
+\begin{definition}[Recovery quality]
+Given a balanced, two-community SBM $G$ with true community labels $\bm{x}$, an estimated community
+label vector $\hat{\bm{x}}$ achieves:
+
+- \textbf{exact recovery,} if $|\langle \hat{\bm{x}}, \bm{x} \rangle| / n = 1$ with high probability;
+
+- \textbf{almost exact recovery,} if $|\langle \hat{\bm{x}}, \bm{x} \rangle| / n = 1 - o(1)$ 
+with high probability;
+
+- \textbf{weak recovery,} if $|\langle \hat{\bm{x}}, \bm{x} \rangle| / n > \alpha$ for some 
+$\alpha > 0$ with high probability.
+\end{definition}
+In this paper, when we say ``with high probability'', we mean that the probability goes to $1$ as
+the number of vertices $n$ goes to infinity.
+
+\subsection{Semidefinite programming}
+Semidefinite programming (SDP) is a powerful tool in optimization. It is an extension of linear
+programming where we optimize a linear function over the set of positive semidefinite matrices 
+satisfying some set of linear constraints. Formally, an SDP can be written in the following standard form:
+\begin{align*}
+\text{minimize}\quad &\langle \bm{C}, \bm{X} \rangle\\
+\text{subject to}\quad &\langle \bm{A}_i, \bm{X} \rangle = b_i \text{ for } i = 1, \ldots, m,\\
+&\bm{X} \succeq 0,
+\end{align*}
+where $\langle \cdot, \cdot \rangle$ denotes the matrix inner product (sum of entrywise products), 
+$\bm{C}, \bm{A}_1, \ldots, \bm{A}_m$ are given symmetric matrices, $b_1, \ldots, b_m$ are given 
+scalars, and $\bm{X}$ is the variable matrix we want to optimize over.
+
+In our context, we will usually have $\bm{C} = \bm{A}_G - \bm{K}$, where $\bm{A}_G$ is the adjacency
+matrix of the graph $G$, and $\bm{K}$ is some correction matrix that depends on the model parameters
+and the observed graph. The constraints will typically enforce that $\bm{X}$ has diagonal entries 
+all equal to $1$, and sometimes other linear constraints. We will use the following notations.
+\begin{definition}[Semidefinite programming notations]
+Denote the set of positive semidefinite matrices with diagonal entries equal to $1$ by
+\[
+\mathcal{PSD}_1(n) = \{\bm{X} \in \mathbb{R}^{n \times n} : \bm{X} \succeq 0, \bm{X}_{ii} = 1 \text{ for all } i \in [n]\}.
+\]
+Write $\mathcal{A}$ for the set of matrices satisfying some linear constraints, i.e.
+\[\mathcal{A} = \{\bm{X} \in \mathbb{R}^{n \times n} : \langle \bm{A}_i, \bm{X} \rangle = b_i \text{ for } i = 1, \ldots, m\}.\]
+Given a matrix $\bm{M} \in \mathbb{R}^{n \times n}$, we define 
+\[\mathcal{SDP}_\mathcal{A}(\bm{M}) := \max_{\bm{X} \in \mathcal{PSD}_1(n) \cap \mathcal{A}} \langle \bm{M}, \bm{X} \rangle.\]
+In particular, if there are no extra constraints, we omit the subscript $\mathcal{A}$ and simply 
+write $\mathcal{SDP}(\bm{M})$.
+\end{definition}
+\subsection{Structure of this essay}
+The rest of the essay is structured as follows. 
+
+In \cref{sec:existing.robustness}, we review some existing robustness models in community detection,
+and the corresponding SDP-based algorithms.
+
+In \cref{sec:weak.recovery}, we focus on the main problem of this essay, which is to achieve
+weak recovery at the Kesten-Stigum threshold under adversarial edge perturbations, explained in
+details in \cref{sec:MS16}. We will take a detailed look at why the algorithm by Montanari and Sen
+\cite{MS16} works, and how it is automatically robust against edge perturbations.
+
+In \cref{sec:perturb.robust}, we introduce a new perturbation model, where we allow the adversary to
+modify the edge probabilities directly. We claim that the same algorithm by Montanari and Sen remains
+robust, and we briefly compare this notion of robustness with other existing notions discussed in 
+\cref{sec:existing.robustness}.
+
+In \cref{sec:sdp.approx}, we prove the robustness claim above.
+
+Finally, in \cref{sec:conclusion}, we conclude the essay and discuss some future directions.
 \section{Existing robustness models in community detection}
+\label{sec:existing.robustness}
 \subsection{Monotone adversary, exact recovery}
-\todo{frame the problem more exactly}
 One of the earlier works on robust community detection is by Feige and Kilian \cite{FK01} in 2001.
 They considered the following monotone adversary model, and came up with an SDP algorithm that
 achieves exact recovery against this adversary.  \todo{check Boppana}
@@ -151,9 +228,8 @@ It may seem that the monotone adversary can only make the problem easier, since 
 certain naive algorithms already fail under this model.
 
 \subsubsection{Naive example: common neighbors algorithm}
-For simplicity, we write $p = (d/n)(1 + \epsilon / 2)$ for the intra-community edge probability, 
-and $q = (d/n)(1 - \epsilon / 2)$ for the inter-community edge probability. Consider the following
-naive algorithm taking in two nodes, and outputting whether they are in the same community or not.
+Consider the following naive algorithm taking in two nodes, and outputting whether they are in the
+same community or not.
 \begin{algorithm}[Common neighbors algorithm]
 \label{alg:degree}
 \leavevmode
@@ -187,16 +263,18 @@ sparse regime we are interested in. Thus, the common neighbors algorithm is not 
 monotone adversary.
 
 \subsubsection{SDP-based robust algorithm}
-Now, we consider the following SDP problem.
+Now, we consider the following SDP problem. Consider the following linear constrained set:
+\[
+\mathcal{A} = \{\bm{X} \in \mathbb{R}^{n \times n} : \sum_{i,j \in [n]} \bm{X}_{ij} = 0\}.
+\]
+Then, our SDP of interest is $\tilde{h}(G) = \mathcal{SDP}_\mathcal{A}(\bm{A}_G)$, which can be 
+written explicitly as
 \begin{align*}
 \tilde{h}(G) = \mathrm{maximize}\quad &\langle \bm{A}_G, \bm{X} \rangle \\
 \mathrm{subject}\ \mathrm{to}\quad &\bm{X} \succeq 0,\\
 &\bm{X}_{ii} = 1 \text{ for all } i \in [n],\\
 &\sum_{i,j \in [n]} \bm{X}_{ij} = 0.
 \end{align*}
-Note that the above SDP is very similar to the SDP we considered in the previous section, except that
-we replaced $\bm{A}^\mathrm{cent}_{G}$, the centered adjacency matrix, with $\bm{A}_G$, the original
-adjacency matrix, and we enforce that the sum of all entries of $\bm{X}$ is zero.
 
 To gain some intuition behind this SDP, let us consider a set of balanced community labels 
 $\hat{x} \in \{\pm 1\}^n$. It is easy to see that the matrix $\hat{\bm{X}} := \hat{x} \hat{x}^\top$ 
@@ -335,18 +413,46 @@ In this particular case, by leveraging the fact that the optimal objective value
 with an important graph statistic (the minimal number of edges between communities) with high probability,
 we are able to strengthen the robustness guarantee to hold for any number of monotone modifications.
 In our cases, we will not be able to achieve such a strong guarantee, but this ``bounded difference''
-property of SDP will still be crucial. For example, in section \todo{ref}, we will relate 
+property of SDP will still be crucial. For example, in \cref{sec:MS16}, we will relate 
 $\mathcal{SDP}(\bm{A}_G^\text{cent})$ to the SDP value of some Gaussian matrix, which will be the
 central component allowing the robust algorithm to work.
 \end{remark}
-\subsection{Edge-robust weak recovery}
-\subsection{From edge-robust to node-robust}
-\subsection{Degree heterogeneity}
-\subsection{Outlier nodes}
 
-\section{SDP-based algorithm for weak recovery at the KS threshold}
-\todo{introduce MS16}
-\subsection{Algorithm}
+\subsection{Edge-robust weak recovery}
+\label{sec:MS16}
+Now let us consider a different setting, where we want to instead achieve weak recovery with the
+minimal amount of community structure. We first introduce the following formulation of the SBM, 
+which is more convenient for our analysis.
+\begin{definition}[$d,\epsilon$-SBM formulation]
+A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community stochastic block model graph
+with $V = [n]$ and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+if for each pair of vertices $i, j \in [n]$, we have
+\[\mathbb{P}((i,j) \in E) = \begin{cases}
+\frac{d}{n}(1+\frac{\epsilon}{2}) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}) & \text{if } x_i \neq x_j.
+\end{cases}\] 
+\end{definition}
+Note that $d$ is the average degree of the graph, and $\epsilon$ controls the strength of the community structure.
+These parameters are assumed to be known constants, and we are interested in the case where $n$ could
+be very large. Hence, we are working in a sparse regime compared to the previous section, 
+where $p$ and $q$ are constants. 
+
+How much community structure do we really need to achieve weak recovery? It has been shown that 
+\cite{MNS15}, in the sparse regime where $d$ is constant, weak recovery is possible if and only if 
+\[\lambda := \frac{\epsilon \sqrt{d}}{2} > 1.\]
+This threshold is known as the Kesten-Stigum threshold. There are various algorithms that can achieve
+weak recovery above the Kesten-Stigum threshold, but they are not known to be robust against edge
+perturbations. In \cite{MS16}, Montanari and Sen proposed a simple SDP-based algorithm that can achieve
+weak recovery almost at the Kesten-Stigum threshold, and is automatically robust against edge perturbations.
+
+Let us first introduce the notion of the centered adjacency matrix.
+\begin{definition}[Centered adjacency matrix]
+Given a graph $G$, let $\bm{A}_G$ be its adjacency matrix, and define $\bm{A}_G^{\mathrm{cent}} = \bm{A}_G - \mathbb{E}[\bm{A}_G]$.
+For $G \sim \mathcal{G}(n, d, \epsilon)$, we have $\mathbb{E}[\bm{A}_G] = \frac{d}{n}\bm{1}\bm{1}^\top$.
+\end{definition}
+
+In their paper, Montanari and Sen looked at $\mathcal{SDP}(\bm{A}_G^{\mathrm{cent}})$, the basic
+SDP problem on the centered adjacency matrix, and proposed the following algorithm.
 \begin{algorithm}[SDP Algorithm from \cite{MS16}]
 \label{alg:MS16}
 \leavevmode
@@ -366,14 +472,86 @@ central component allowing the robust algorithm to work.
     \item Output $\hat{\bm{x}}^\mathrm{SDP}(G) = \hat{\bm{x}}^{(i^*,j^*)}$.
 \end{enumerate}
 \end{algorithm}
-We have the following weak recovery rate guarantee for Algorithm \ref{alg:MS16}.
+We have the following weak recovery rate and edge robustness result for Algorithm \ref{alg:MS16}.
 \begin{theorem}[Weak Recovery for Algorithm \ref{alg:MS16}]\label{thm:MS16.recovery}
 Let $G \sim \mathcal{G}(n, d, \epsilon)$ and assume, for some $\delta > 0$, that $\lambda = \epsilon\sqrt{d}/2 \geq 1 + \delta$.
 Then, there exists $\eta = \eta(\delta) > 0$ and $d_* = d_*(\delta) > 0$ such that, for all $d \geq d_*$,
 the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfies
 \[\mathbb{P}\left(\frac{1}{n} |\langle \hat{\bm{x}}^\mathrm{SDP}(G), x \rangle| \geq \eta \right) \geq 1 - Ce^{-\sqrt{n}/C}.\]
 \end{theorem}
-\todo{discuss robustness of the algorithm}
+This will be the first main result we will focus on later in this essay in \cref{sec:weak.recovery}. 
+For now, we will just give a high-level overview of the algorithm and the proof ideas.
+
+The main idea behind the proof is that there exists some Gaussian random matrix $\bm{B}(\lambda)$, 
+such that $\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d})$ is close to 
+$\mathcal{SDP}(\bm{B}(\lambda))$, and $\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d}
+- (\lambda / n)\bm{x}\bm{x}^\top)$ is close to $\mathcal{SDP}(\bm{B}(0))$. There is a phase
+transition result for the SDP value of $\bm{B}(\lambda)$ at $\lambda = 1$, so we can bound
+$\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d})$ and $\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d}
+- (\lambda / n)\bm{x}\bm{x}^\top)$ apart. This is known as the \emph{push-out effect},
+which guarantees that the optimizer to $\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d})$ 
+must contain nontrivial information about $\bm{x}$. Then, we can show that the rounding procedure in 
+Step \ref{alg:MS16.rounding} and the selection procedure in Step \ref{alg:MS16.selection} can 
+extract this information to produce an estimator $\hat{\bm{x}}^\mathrm{SDP}(G)$ that 
+achieves weak recovery.
+
+If we allow a small number of edge perturbations, then by the bounded differences property of SDP, 
+the two SDP values, $\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d})$ and
+$\mathcal{SDP}(\bm{A}_{G}^{\mathrm{cent}}/\sqrt{d} - (\lambda / n)\bm{x}\bm{x}^\top)$, only undergo
+small changes and remain bounded apart, so the rest of the proof still goes through.
+
+\begin{remark}
+Note that in the proof here, we again leveraged the ``bounded differences'' property of SDP, explicitly
+in the edge robustness part, and also implicitly in the node robustness part where we relate SDP 
+values of the observed graph to those of some Gaussian random matrices. Then, using an additional SDP
+phase transition result for the Gaussian random matrices, we get the desired recovery and robustness
+guarantees. This mirrors the proof structure of the exact recovery under monotone adversary before,
+where we also leveraged the ``bounded differences'' property of SDP, and a different property
+of the SDP value to get recovery and robustness guarantees.
+\end{remark}
+\subsection{From edge-robust to node-robust}
+As is, the algorithm above is only known to be robust against $O(n\sqrt{d})$ edge perturbations.
+However, if we want to edit $\mu n$ nodes, we can potentially change $O(n^2)$ edges, since editing
+each node can change up to $n$ edges. Thus, the algorithm above is not automatically robust against
+node perturbations.
+
+Later, Ding et al. \cite{DdHS23} came up with a way to modify the algorithm above to make it robust
+against node perturbations. Their starting point is that, after $\mu n$ node edits, there still
+remains a $(1 - \mu)n \times (1 - \mu)n$ submatrix of the adjacency matrix that is unperturbed, 
+and thus still has the push-out effect. In particular, writing the set of unperturbed nodes
+as $S$, then $\bm{A}_G^{\mathrm{cent}}{}_{[S,S]}$ has the push-out effect. 
+
+
+Thus, we want to select such a submatrix, a naive idea is to select
+the $(1 - \mu)n \times (1 - \mu)n$ submatrix with the largest SDP value, but this could be fabricated
+by the adversary. Instead, they propose to select the $(1 - \mu)n \times (1 - \mu)n$ submatrix 
+whose large submatrices all have large SDP values. This is a more robust selection procedure,
+and 
+
+\subsection{Degree heterogeneity}
+So far, we have only considered SBMs where all nodes have the same expected degree. In practice, 
+this is not always the case. We can consider the more general degree-corrected SBM (DCSBM) model, 
+where each node is given an additional expected degree parameter, and the edge probabilities are
+determined by both the community labels and the expected degree parameters of the endpoints.
+\begin{definition}[Balance, two-community, degree-corrected SBM]
+A graph $G \sim \mathcal{G}(n, p, q, \bm{\theta})$ is a degree-corrected SBM graph with $V = [n]$, 
+and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+if, for each pair of vertices $i, j \in [n]$, we have
+\[\mathbb{P}((i,j) \in E) = \begin{cases}
+\theta_i \theta_j p & \text{if } x_i = x_j, \\
+\theta_i \theta_j q & \text{if } x_i \neq x_j.
+\end{cases}\]
+\end{definition}
+This definition can be extended to multiple unbalanced communities, but for consistency with previous
+sections, we will only consider the balanced, two-community case here. The results we will discuss
+are originally proven in the more general setting, but the balanced, two-community case is already
+sufficient to illustrate the main ideas.
+
+
+\subsection{Outlier nodes} 
+
+
+
 
 \section{Proof of weak recovery (Theorem \ref{thm:MS16.recovery})}
 \label{sec:weak.recovery}
@@ -455,7 +633,7 @@ Let $\bm{B}(\lambda)$ be a deformed GOE matrix. Then, there exists $C = C(\lambd
 Moreover, $C(\lambda)$ is bounded for $\lambda$ in any compact set.
 \end{lemma}
 
-We will discuss the proofs of the above two lemmas later in \cref{sec:bounds}. We will take them for granted here.
+We will discuss the proofs of the above two lemmas later in \cref{sec:sdp.approx}. We will take them for granted here.
 
 Now we have the tools to obtain a lower bound on $n^{-2} \langle \bm{x}\bm{x}^\top, \bm{X}^* \rangle$.
 \begin{align*}
@@ -736,10 +914,10 @@ must satisfy
 \frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \frac{\Delta_2(\lambda)}{4}.
 \]
 This completes the proof of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquare$
+\subsection{Robustness against modifying $O(n\sqrt{d})$ edges}
 
 \section{Robustness of the SDP}
-\subsection{Robustness against modifying $O(n\sqrt{d})$ edges}
-\label{sec:edge.robust}
+\label{sec:perturb.robust}
 \todo{explain}
 
 \subsection{Robustness with perturbed SBMs}
@@ -1169,6 +1347,7 @@ Crucially, the above bound goes to zero as $d \to \infty$, which allows us to co
 algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \hfill $\blacksquare$
 
 \section{Conclusion and Future Directions}
+\label{sec:conclusion}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
@@ -1184,14 +1363,7 @@ algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \
 % When submitting the essay, you must upload your .bib file alongside this .tex file.
 
 \bibliographystyle{alpha}
-\begin{thebibliography}{99}
-\bibitem[MS16]{MS16}
-Montanari, A. and Sen, S. (2015) \emph{Semidefinite Programs on Sparse Random Graphs and their Application to Community Detection}, Proceedings of the forty-eighth annual ACM symposium on Theory of Computing, 2016, pp. 814–827.
-\bibitem{examplebib}
-Author (Year) \emph{Title}, Publisher
-
-
-\end{thebibliography}
+\bibliography{references}
 
 \end{document}
 

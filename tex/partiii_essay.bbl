@@ -1,0 +1,27 @@
+\begin{thebibliography}{DdHS23}
+
+\bibitem[Abb23]{Abbe23}
+Emmanuel Abbe.
+\newblock Community detection and stochastic block models, 2023.
+
+\bibitem[DdHS23]{DdHS23}
+Jingqiu Ding, Tommaso d'Orsi, Yiding Hua, and David Steurer.
+\newblock Reaching kesten-stigum threshold in the stochastic block model under node corruptions.
+\newblock In {\em The Thirty Sixth Annual Conference on Learning Theory}, pages 4044--4071. PMLR, 2023.
+
+\bibitem[FK01]{FK01}
+Uriel Feige and Joe Kilian.
+\newblock Heuristics for semirandom graph problems.
+\newblock {\em Journal of Computer and System Sciences}, 63(4):639--671, 2001.
+
+\bibitem[MNS15]{MNS15}
+Elchanan Mossel, Joe Neeman, and Allan Sly.
+\newblock Reconstruction and estimation in the planted partition model.
+\newblock {\em Probability Theory and Related Fields}, 162(3--4):431--461, 2015.
+
+\bibitem[MS16]{MS16}
+Andrea Montanari and Subhabrata Sen.
+\newblock Semidefinite programs on sparse random graphs and their application to community detection.
+\newblock In {\em Proceedings of the 48th Annual ACM Symposium on Theory of Computing}, pages 814--827, 2016.
+
+\end{thebibliography}
