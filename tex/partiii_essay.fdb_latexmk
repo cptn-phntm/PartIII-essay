@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex partiii_essay"] 1778124370.60641 "partiii_essay.aux" "partiii_essay.bbl" "partiii_essay" 1778124371.4071 0
-  "./references.bib" 1778115416.04035 2598 9e66e978957a933d276f9e83342d2e30 ""
+["bibtex partiii_essay"] 1778127462.22007 "partiii_essay.aux" "partiii_essay.bbl" "partiii_essay" 1778127532.80099 0
+  "./references.bib" 1778125631.15801 3651 509ada63980300bdf41017f1f51ce761 ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bst/base/alpha.bst" 1292289607 23907 a5f93555796fb564b924339521f10a7c ""
-  "partiii_essay.aux" 1778124371.24174 12656 0c2b989f59600e15a285a14c3f0ebb29 "pdflatex"
+  "partiii_essay.aux" 1778127532.64383 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
   (generated)
   "partiii_essay.bbl"
   "partiii_essay.blg"
   (rewritten before read)
-["pdflatex"] 1778124370.66727 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778124371.40721 0
+["pdflatex"] 1778127532.2117 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778127532.80109 0
   "/Users/jerry/Library/texlive/2026/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.657pk" 1776385807.3993 7808 af288bf8d935719c3f8688e7f7fcc7a5 ""
-  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778124369.74967 95464 3d9c84058d8039d308afb17c756e6740 ""
+  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778127532.12426 96323 6007b1a5779a0c6e71f70f493f3a48fa ""
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -193,15 +193,13 @@
   "/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1776279145 5573038 b99aad5e4898a9034e953632f940512b ""
   "/usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1776279137 3636772 a727b2fbe76c0a23d7876f8d32aa8c56 ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
-  "partiii_essay.aux" 1778124371.24174 12656 0c2b989f59600e15a285a14c3f0ebb29 "pdflatex"
-  "partiii_essay.bbl" 1778124370.66521 2030 3ca6b71bee5a4f2b80d16afd2f5bd839 "bibtex partiii_essay"
-  "partiii_essay.tdo" 1778124371.24281 713 3e44957fc074cc8fa17e9e52235669e4 "pdflatex"
-  "partiii_essay.tex" 1778124369.74967 95464 3d9c84058d8039d308afb17c756e6740 ""
-  "partiii_essay.toc" 1778124371.24278 2727 21a7e746dbce9fc5b20bbcc1b438451a "pdflatex"
+  "partiii_essay.aux" 1778127532.64383 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
+  "partiii_essay.bbl" 1778127462.27927 2794 950daf9438513d2e4a7e10d84f7148a9 "bibtex partiii_essay"
+  "partiii_essay.tex" 1778127532.12426 96323 6007b1a5779a0c6e71f70f493f3a48fa ""
+  "partiii_essay.toc" 1778127532.64473 2726 cd27ac6b5abbadaef4cfeca815c0437a "pdflatex"
   (generated)
   "partiii_essay.aux"
   "partiii_essay.log"
   "partiii_essay.pdf"
-  "partiii_essay.tdo"
   "partiii_essay.toc"
   (rewritten before read)

@@ -100,11 +100,12 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 \begin{document}
 \maketitle
+\pagenumbering{gobble}
 \tableofcontents
-\listoftodos
 \newpage
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+\pagenumbering{arabic}
+\setcounter{page}{1}
 % START WRITING YOUR ESSAY HERE
 \section{Introduction}
 \subsection{Background}
@@ -213,7 +214,7 @@ Finally, in \cref{sec:conclusion}, we conclude the essay and discuss some future
 \subsection{Monotone adversary, exact recovery}
 One of the earlier works on robust community detection is by Feige and Kilian \cite{FK01} in 2001.
 They considered the following monotone adversary model, and came up with an SDP algorithm that
-achieves exact recovery against this adversary.  \todo{check Boppana}
+achieves exact recovery against this adversary.
 \begin{definition}[Monotone adversary model]
 \label{def:monotone}
 Let $G$ be a balanced, two-community SBM. A monotone adversary can look at the realised graph $G$
@@ -306,8 +307,7 @@ $G$ (adding a new edge or removing an existing one). Then, with probability at l
 $1 - n^{-1 + o(1)}$, we have $h(G') = b(G')$ for all possible modifications.
 \end{lemma}
 This inspires the following algorithm.
-\todo{cite FK, Boppana}
-\begin{algorithm}[SDP-based exact recovery under monotone adversary]
+\begin{algorithm}[SDP-based exact recovery under monotone adversary, \cite{FK01}]
 \label{alg:monotone.SDP}
 \leavevmode
 \begin{enumerate}
@@ -580,7 +580,7 @@ non-negative by the optimality of $\hat{\bm{X}}$. We can decompose this quantity
 Using the conditions in the theorem, we can show that the first term is upper bounded by
 $-\delta \|\hat{\bm{X}} - \bm{X}\|_{1, \bm{\theta}}$. The second and third terms can be controlled
 using Grothendieck's inequality, which is a concentration result relying on the fact that 
-$\hat{\bm{X}} \in \mathcal{PSD}_1$. Indirectly, this is yet again using the ``bounded 
+$\hat{\bm{X}} \in \mathcal{PSD}_1$. Indirectly, this is yet again using a ``bounded 
 differences'' property, this time of the inner product rather than the SDP itself. 
 Rearranging the terms, we get the desired inequality.
 
@@ -731,10 +731,11 @@ C_1 e^{-n/C_1} + C_2 e^{-n/C_2} \leq (C_1 + C_2) e^{-n/\max(C_1, C_2)}
 \leq (C_1 + C_2) e^{-n/(C_1 + C_2)} = C e^{-n/C}.
 \]
 
-Also, note that, in our definition, $G_\mathrm{sample}$ and $G_\mathrm{eval}$ are dependent. However,
-we need their independence in our proof. To fix this issue, we note that if we sampled them independently, 
-then the two graphs 
-\todo{investigate independence}
+Also, note that, in our definition, $G_\mathrm{sample}$ and $G_\mathrm{eval}$ are dependent, since
+they cannot share edges. However, we need their independence in our proof. To fix this issue, we note
+that if we sampled them independently, then the two graphs would share $O(1)$ edges with high probability,
+which we can ignore since we will show that the algorithm is robust against $o(n\sqrt{d})$ edge perturbations.
+Hence, we can assume that $G_\mathrm{sample}$ and $G_\mathrm{eval}$ are independent without loss of generality.
 
 \subsection{Step 1: $\bm{X}^*$ contains nontrivial information about $\bm{x}$}
 We first introduce a group of Gaussian random matrices (GOEs) that have well-behaved SDP values.
@@ -906,7 +907,7 @@ will find such $\hat{\imath}, \hat{\jmath}$ with high probability, which will th
 We first want to relate the quantities $\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}$,
 the objective function in Step \ref{alg:MS16.selection} of \cref{alg:MS16},
 to $\langle\bm{x}, \hat{\bm{x}}\rangle$, the correlation above, with high probability. 
-Recall the well-known Azuma-Hoeffding inequality.\todo{add reference}
+Recall the well-known Azuma-Hoeffding inequality (see, for example, Alon and Spencer~\cite[Chapter 7]{Alon16}).
 \begin{lemma}[Azuma-Hoeffding inequality]
 \label{lem:A-H}
 Let $X_0, \ldots, X_m$ be a martingale, with bounded increments,
@@ -1172,8 +1173,8 @@ of edge modifications is much smaller in order to satisfy the conditions.
 \subsubsection{Example 1: i.i.d. perturbations}
 Suppose $h_{ij}$'s are i.i.d. uniform in $\{-Cd^{-2\alpha}, Cd^{-2\alpha}\}$ for some constant $C$.
 Then, condition (a) is satisfied by definition, and condition (b) follows from the well-known result
-on the operator norm of random matrices with i.i.d. Rademacher entries \todo{cite}, which gives
-$\mathbb{E}(\|\bm{H}\|_\text{op}) \lesssim O(\sqrt{n}d^{-2\alpha})$, which is smaller than
+on the operator norm of random matrices with i.i.d. Rademacher entries (for example, \cite[Theorem 4.4.3]{Ver18}),
+which gives $\mathbb{E}(\|\bm{H}\|_\text{op}) \lesssim O(\sqrt{n}d^{-2\alpha})$, which is smaller than
 $O(nd^{-1/2 - \alpha})$ for large $n$. Hence, under this perturbation, the algorithm can still 
 achieve weak recovery.
 
@@ -1200,7 +1201,7 @@ Note that the proof of weak recovery in \cref{sec:weak.recovery} only uses the a
 in two places: the SDP approximation lemmas (Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}),
 which we will discuss for the rest of this section,
 and $\mathbb{E}[\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}]$ in \cref{eqn:conc}, which will be the same
-for the perturbed SBM and the original SBM since $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$.
+for the perturbed SBM and the original SBM since $\mathbb{E}[h_{ij}] = 0$ for all $i, j \in [n]$.
 Thus, to show that the algorithm remains effective for the perturbed SBM,
 we only need to show that similar SDP approximation results hold for the perturbed SBM.
 
@@ -1327,8 +1328,8 @@ most central step in extending the algorithm to the new setting.
 
 \subsection{Lindeberg Interpolation}
 \label{sec:sdp.interp}
-The motivation of the interpolation step is the following Lindeberg interpolation lemma. \todo{cite}
-\begin{lemma}[Lindeberg interpolation]
+The motivation of the interpolation step is the following Lindeberg interpolation lemma.
+\begin{lemma}[Lindeberg interpolation, Theorem 1.1 of \cite{Cha06}]
 \label{lem:lindeberg}
 Let $F: \mathbb{R}^N \to \mathbb{R}$ be a thrice continuously differentiable function, and
 let $\bm{X} = (X_1, \ldots, X_N)$ and $\bm{Z} = (Z_1, \ldots, Z_N)$ be two vectors of independent 
@@ -1360,15 +1361,14 @@ when $n$ is sufficiently large.
 
 Next, we bound the third moments of the entries of $\bm{D}$. Note that if $X = a + bZ$, where
 $Z \sim \mathcal{N}(0,1)$, then $\mathbb{E}[|X|^3] \leq 4(|a|^3 + |b|^3)$. Since
-$\bm{D}_{ij} = -p_{ij} / \sqrt{d} + \sqrt{p_{ij}(1-p_{ij})/d} Z_{ij}$, where $Z_{ij} \sim \mathcal{N}(0,1)$, we have
-\todo{check Dij}
+$\bm{D}_{ij} = \eta_{ij} \sqrt{d} / n  + \sqrt{p_{ij}(1-p_{ij})/d} \cdot Z_{ij}$, where $Z_{ij} \sim \mathcal{N}(0,1)$, we have
 \begin{align*}
 \sum_{i,j \in [n]} \mathbb{E} \left|\bm{D}_{ij}\right|^3 
-&\leq 4\sum_{i,j \in [n]} \left(\left(\frac{p_{ij}}{\sqrt{d}}\right)^3 
+&\leq 4\sum_{i,j \in [n]} \left(\left(\frac{\eta_{ij} \sqrt{d}}{n}\right)^3 
 + \left(\frac{p_{ij}(1-p_{ij})}{d}\right)^{3/2}\right)\\
-&\leq \sum_{i,j \in [n]} \left(\frac{d^{3/2}}{n^3}(1+\eta_{ij})^3 
+&\leq \sum_{i,j \in [n]} \left(\frac{d^{3/2}}{n^3}\eta_{ij}^3 
 + \frac{1}{n^{3/2}}(1+\eta_{ij})^{3/2}\right)\\
-&\leq \frac{8d^{3/2}}{n} + 2\sqrt{2n}
+&\leq \frac{d^{3/2}}{n} + 2\sqrt{2n}
 < \frac{n}{\sqrt{d}},
 \end{align*}
 where we used the fact that $|\eta_{ij}| \leq 1$ and $d \ll n$.
@@ -1420,7 +1420,10 @@ Therefore,
 &\leq \mathbb{E} \|\bm{D} - \bm{B}\|_{\mathrm{op}}.
 \end{align*}
 Thus, we want to find a bound on $\mathbb{E} \|\bm{D} - \bm{B}\|_{\mathrm{op}}$. To do this,
-we will use a coupling argument. Writing $V_{ij} = n p_{ij} (1 - p_{ij}) / d$, note that
+we will use a coupling argument. Note that the diagonal entries of $\bm{D}$ and $\bm{B}$ are zero, 
+and the entries are symmetric, so we only need to consider the entries above the diagonal.
+For simplicity, we fix a realization of $\bm{H}$. Writing $V_{ij} = n p_{ij} (1 - p_{ij}) / d$, 
+note that for all $i, j \in [n]$, $i < j$, we have
 \[
 V_{ij} = (1 + \eta_{ij})\left(1 - \frac{d}{n}(1 + \eta_{ij})\right),
 \]
@@ -1428,12 +1431,11 @@ V_{ij} = (1 + \eta_{ij})\left(1 - \frac{d}{n}(1 + \eta_{ij})\right),
 \bm{D}_{ij} \sim \mathcal{N}\left(
 \frac{\lambda}{n} x_i x_j + \frac{\sqrt{d}}{n} h_{ij}, \ \frac{1}{n}V_{ij}\right),
 \]
-\todo{check signs}
 \[
 \bm{B}_{ij} \sim \mathcal{N}\left(
 \frac{\lambda}{n} x_i x_j, \ \frac{1}{n}\right).
 \]
-\todo{diagonal}
+ 
 Thus, we can couple $\bm{D}$ and $\bm{B}$ such that
 \[
 \bm{D} = \frac{\lambda}{n} \bm{x} \bm{x}^\top + \frac{\sqrt{d}}{n} \bm{H} 
@@ -1443,21 +1445,22 @@ Thus, we can couple $\bm{D}$ and $\bm{B}$ such that
 \bm{B} = \frac{\lambda}{n} \bm{x} \bm{x}^\top + \bm{Z_0} + \bm{Z_B},
 \]
 where $\bm{Z_0}, \bm{Z_D}, \bm{Z_B}$ are Gaussian matrices with mean-zero, independent entries.
-Writing $V_- = \min_{i,j} V_{ij}$, the variances of the entries are given by
+
+Writing $V_- = \min_{i,j} \left(-\|- V_{ij}\|_\infty\right)$, the variances of the entries are given by
 \[
-\operatorname{Var}(\bm{Z_0}{}_{,ij}) = \begin{cases}
+\operatorname{Var}(\bm{Z_0}{}_{,ij}\mid \bm{H}) = \begin{cases}
 \frac{1}{n}V_- & \text{if } i \neq j,\\
 0 & \text{if } i = j,
 \end{cases}
 \]
 \[
-\operatorname{Var}(\bm{Z_D}{}_{,ij}) = \begin{cases}
+\operatorname{Var}(\bm{Z_D}{}_{,ij}\mid \bm{H}) = \begin{cases}
 \frac{1}{n}(V_{ij} - V_-) & \text{if } i \neq j,\\
 0 & \text{if } i = j,
 \end{cases}
 \]
 \[
-\operatorname{Var}(\bm{Z_B}{}_{,ij}) = \begin{cases}
+\operatorname{Var}(\bm{Z_B}{}_{,ij}\mid \bm{H}) = \begin{cases}
 \frac{1}{n}(1 - V_-) & \text{if } i \neq j,\\
 0 & \text{if } i = j,
 \end{cases}
@@ -1469,12 +1472,8 @@ Under this coupling, by the triangle inequality, we have
 \leq \frac{\sqrt{d}}{n} \mathbb{E} \|\bm{H}\|_{\mathrm{op}} + \mathbb{E} \|\bm{Z_D}\|_{\mathrm{op}} 
 + \mathbb{E} \|\bm{Z_B}\|_{\mathrm{op}}.
 \]
-\todo{condition on xis}
-\todo{mention symmetry of everything}
-\todo{theorem statement gives op bound of H}
 We then use the following result for operator norm of centered Gaussian matrices.
-\todo{cite, 1408.6185}
-\begin{theorem}[Operator norm of Gaussian matrices]
+\begin{theorem}[Operator norm of Gaussian matrices, Theorem 1.1 of \cite{Ban16}]
 \label{thm:gaussian.op}
 Let $\bm{X}$ be an $n \times n$ symmetric matrix with $\bm{X}_{ij} = g_{ij}b_{ij}$ for $i \geq j$, 
 where $g_{ij}$ are independent standard Gaussian variables, and $b_{ij}$ are given scalars. 
@@ -1485,23 +1484,28 @@ Then, writing
 \]
 for every $s\in (0,1/2]$, we have
 \[
-\mathbb{E} \| \bm{X} \| \leq (1+s) \left(2\sigma^*_\text{row} 
+\mathbb{E} \| \bm{X} \|_{\mathrm{op}} \leq (1+s) \left(2\sigma^*_\text{col} 
 + \frac{6}{\sqrt{\log(1+s)}} \sigma^*_\text{elt} \sqrt{\log n}\right)
 \]
 \end{theorem}
-In our case, writing $V_+ = \max_{i,j} V_{ij}$ \todo{edit V+- defn}, for all $i, j \in [n]$, we have
+In our case, writing $V_+ = \max_{i,j} \|V_{ij}\|_\infty$, for all $i, j \in [n]$, we have
 \[ 
-\operatorname{Var}(\bm{Z_D}{}_{,ij}),\ \operatorname{Var}(\bm{Z_B}{}_{,ij}) 
+\operatorname{Var}(\bm{Z_D}{}_{,ij} \mid \bm{H}),\ \operatorname{Var}(\bm{Z_B}{}_{,ij} \mid \bm{H}) 
 \leq \frac{1}{n}(V_+ - V_-).
 \]
 Thus, writing $\delta V := V_+ - V_-$, we have $\sigma^*_\text{col} \leq \sqrt{\delta V}$, 
 $\sigma^*_\text{elt} \leq \sqrt{\delta V / n}$. Applying the above theorem,
 \[
-\mathbb{E} \|\bm{Z_D}\|,\ \mathbb{E} \|\bm{Z_B}\| 
+\mathbb{E} \left(\|\bm{Z_D}\|_{\mathrm{op}} \mid \bm{H}\right), 
+\ \mathbb{E} \left(\|\bm{Z_B}\|_{\mathrm{op}} \mid \bm{H}\right)
 \leq (1+s) \left(2 + \frac{6}{\sqrt{\log(1+s)}} \sqrt{\frac{\log n}{n}} \right)\sqrt{\delta V}
 \leq C \sqrt{\delta V},
 \]
-when $n$ is sufficiently large.
+when $n$ is sufficiently large. Thus, by the tower law of expectation, we have
+\[
+\mathbb{E} \| \bm{Z_D}\|_{\mathrm{op}}, \ \mathbb{E} \| \bm{Z_B}\|_{\mathrm{op}}
+\leq C \sqrt{\delta V}.
+\]
 
 Recall that $V_{ij} = np_{ij}(1-p_{ij})/d$, and $p_{ij} \ll 1/2$, so $V_{ij}$ is increasing in $p_{ij}$,
 and thus increasing in $\eta_{ij}$. Since $|\eta_{ij}| \leq \epsilon/2 + \|h\|_\infty$, we have 
@@ -1512,9 +1516,10 @@ and thus increasing in $\eta_{ij}$. Since $|\eta_{ij}| \leq \epsilon/2 + \|h\|_\
 \left(1 - \frac{d}{n}\left(1 - \frac{\epsilon}{2} - \|h\|_\infty\right)\right)\\
 &\leq \left(1 - \frac{d}{n}\right)(\epsilon + 2\|h\|_\infty)\\
 &<\epsilon + 2\|h\|_\infty
-< C d^{-2\alpha}.
+< C d^{-2\alpha},
 \end{align*}
-\todo{mention eps order in d, or lambda is roughly order 1}
+where we used the fact that $\epsilon = \lambda d^{-1/2} = O(d^{-1/2})$ and $\|h\|_\infty = O(d^{-2\alpha})$.
+
 Therefore, we have
 \begin{align*}
 \mathbb{E} \| \bm{D} - \bm{B}\|_{\mathrm{op}}

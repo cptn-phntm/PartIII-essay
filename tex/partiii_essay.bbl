@@ -4,6 +4,21 @@
 Emmanuel Abbe.
 \newblock Community detection and stochastic block models, 2023.
 
+\bibitem[AS16]{Alon16}
+Noga Alon and Joel~H. Spencer.
+\newblock {\em The Probabilistic Method}.
+\newblock Wiley, 4 edition, 2016.
+
+\bibitem[BVH16]{Ban16}
+Afonso~S Bandeira and Ramon Van~Handel.
+\newblock Sharp nonasymptotic bounds on the norm of random matrices with independent entries.
+\newblock {\em Annals of probability: An official journal of the Institute of Mathematical Statistics}, 44(4):2479--2506, 2016.
+
+\bibitem[Cha06]{Cha06}
+Sourav Chatterjee.
+\newblock A generalization of the lindeberg principle.
+\newblock {\em The Annals of Probability}, 34(6):2061--2076, 2006.
+
 \bibitem[CL15]{CL15}
 T~TONY CAI and XIAODONG LI.
 \newblock Robust and computationally feasible community detection in the presence of arbitrary outlier nodes.
@@ -43,5 +58,10 @@ Andrea Montanari and Subhabrata Sen.
 M.~E.~J. Newman.
 \newblock Modularity and community structure in networks.
 \newblock {\em Proceedings of the National Academy of Sciences}, 103(23):8577--8582, 2006.
+
+\bibitem[Ver18]{Ver18}
+Roman Vershynin.
+\newblock {\em High-Dimensional Probability: An Introduction with Applications in Data Science}.
+\newblock Cambridge University Press, 2018.
 
 \end{thebibliography}
