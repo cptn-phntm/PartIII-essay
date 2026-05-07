@@ -1,13 +1,28 @@
-\begin{thebibliography}{DdHS23}
+\begin{thebibliography}{DdNS22}
 
 \bibitem[Abb23]{Abbe23}
 Emmanuel Abbe.
 \newblock Community detection and stochastic block models, 2023.
 
+\bibitem[CL15]{CL15}
+T~TONY CAI and XIAODONG LI.
+\newblock Robust and computationally feasible community detection in the presence of arbitrary outlier nodes.
+\newblock {\em The Annals of Statistics}, 43(3):1027--1059, 2015.
+
+\bibitem[CLX18]{CLX18}
+Yudong Chen, Xiaodong Li, and Jiaming Xu.
+\newblock Convexified modularity maximization for degree-corrected stochastic block models.
+\newblock {\em The Annals of Statistics}, 46(4):1573--1602, 2018.
+
 \bibitem[DdHS23]{DdHS23}
 Jingqiu Ding, Tommaso d'Orsi, Yiding Hua, and David Steurer.
 \newblock Reaching kesten-stigum threshold in the stochastic block model under node corruptions.
 \newblock In {\em The Thirty Sixth Annual Conference on Learning Theory}, pages 4044--4071. PMLR, 2023.
+
+\bibitem[DdNS22]{DdNS22}
+Jingqiu Ding, Tommaso d'Orsi, Rajai Nasser, and David Steurer.
+\newblock Robust recovery for stochastic block models.
+\newblock In {\em 2021 IEEE 62nd annual symposium on foundations of computer science (FOCS)}, pages 387--394. IEEE, 2022.
 
 \bibitem[FK01]{FK01}
 Uriel Feige and Joe Kilian.
@@ -23,5 +38,10 @@ Elchanan Mossel, Joe Neeman, and Allan Sly.
 Andrea Montanari and Subhabrata Sen.
 \newblock Semidefinite programs on sparse random graphs and their application to community detection.
 \newblock In {\em Proceedings of the 48th Annual ACM Symposium on Theory of Computing}, pages 814--827, 2016.
+
+\bibitem[New06]{Newman06}
+M.~E.~J. Newman.
+\newblock Modularity and community structure in networks.
+\newblock {\em Proceedings of the National Academy of Sciences}, 103(23):8577--8582, 2006.
 
 \end{thebibliography}

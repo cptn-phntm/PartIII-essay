@@ -8,20 +8,24 @@
 \contentsline {subsubsection}{\numberline {2.1.1}Naive example: common neighbors algorithm}{5}{}%
 \contentsline {subsubsection}{\numberline {2.1.2}SDP-based robust algorithm}{6}{}%
 \contentsline {subsection}{\numberline {2.2}Edge-robust weak recovery}{9}{}%
-\contentsline {subsection}{\numberline {2.3}From edge-robust to node-robust}{12}{}%
-\contentsline {subsection}{\numberline {2.4}Degree heterogeneity}{12}{}%
-\contentsline {subsection}{\numberline {2.5}Outlier nodes}{12}{}%
-\contentsline {section}{\numberline {3}Proof of weak recovery (Theorem \ref {thm:MS16.recovery})}{12}{}%
-\contentsline {subsection}{\numberline {3.1}Step 1: $\bm {X}^*$ contains nontrivial information about $\bm {x}$}{13}{}%
-\contentsline {subsection}{\numberline {3.2}Step 2: There exists ``good'' label estimators among $\{\hat {\bm {x}}^{(i,j)}\}_{i,j \in [n]}$}{14}{}%
-\contentsline {subsection}{\numberline {3.3}Step 3: A ``good'' estimator can be found with $G_\mathrm {eval}$}{16}{}%
-\contentsline {subsection}{\numberline {3.4}Robustness against modifying $O(n\sqrt {d})$ edges}{19}{}%
-\contentsline {section}{\numberline {4}Robustness of the SDP}{19}{}%
-\contentsline {subsection}{\numberline {4.1}Robustness with perturbed SBMs}{19}{}%
-\contentsline {subsection}{\numberline {4.2}Comparison of the two notions of robustness}{20}{}%
-\contentsline {section}{\numberline {5}Proof of weak recovery for perturbed SBMs (\cref {thm:perturbed.SBM})}{20}{}%
-\contentsline {subsection}{\numberline {5.1}Helper functions}{20}{}%
-\contentsline {subsection}{\numberline {5.2}Lindeberg Interpolation}{22}{}%
-\contentsline {subsection}{\numberline {5.3}Coupling of Gaussian Matrices}{24}{}%
-\contentsline {subsection}{\numberline {5.4}Combining all the pieces}{26}{}%
-\contentsline {section}{\numberline {6}Conclusion and Future Directions}{27}{}%
+\contentsline {subsection}{\numberline {2.3}Degree heterogeneity}{11}{}%
+\contentsline {subsection}{\numberline {2.4}Other robustness results}{13}{}%
+\contentsline {subsubsection}{\numberline {2.4.1}Edge-robust weak recovery at the KS threshold}{13}{}%
+\contentsline {subsubsection}{\numberline {2.4.2}Weak recovery with outlier nodes}{14}{}%
+\contentsline {subsubsection}{\numberline {2.4.3}Node-robust weak recovery}{15}{}%
+\contentsline {section}{\numberline {3}Proof of weak recovery \& edge robustness (Theorem \ref {thm:MS16.recovery})}{15}{}%
+\contentsline {subsection}{\numberline {3.1}Step 1: $\bm {X}^*$ contains nontrivial information about $\bm {x}$}{16}{}%
+\contentsline {subsection}{\numberline {3.2}Step 2: There exists ``good'' label estimators among $\{\hat {\bm {x}}^{(i,j)}\}_{i,j \in [n]}$}{17}{}%
+\contentsline {subsection}{\numberline {3.3}Step 3: A ``good'' estimator can be found with $G_\mathrm {eval}$}{19}{}%
+\contentsline {subsection}{\numberline {3.4}Robustness against modifying $O(n\sqrt {d})$ edges}{22}{}%
+\contentsline {section}{\numberline {4}Robustness against perturbed SBMs}{23}{}%
+\contentsline {subsection}{\numberline {4.1}Perturbed SBMs}{23}{}%
+\contentsline {subsection}{\numberline {4.2}Example perturbations}{24}{}%
+\contentsline {subsubsection}{\numberline {4.2.1}Example 1: i.i.d. perturbations}{24}{}%
+\contentsline {subsubsection}{\numberline {4.2.2}Example 2: structured perturbations}{24}{}%
+\contentsline {section}{\numberline {5}Proof of weak recovery for perturbed SBMs (\cref {thm:perturbed.SBM})}{25}{}%
+\contentsline {subsection}{\numberline {5.1}Helper functions}{25}{}%
+\contentsline {subsection}{\numberline {5.2}Lindeberg Interpolation}{27}{}%
+\contentsline {subsection}{\numberline {5.3}Coupling of Gaussian Matrices}{28}{}%
+\contentsline {subsection}{\numberline {5.4}Combining all the pieces}{31}{}%
+\contentsline {section}{\numberline {6}Conclusion and Future Directions}{31}{}%

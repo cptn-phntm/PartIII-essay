@@ -14,7 +14,7 @@
 \usepackage{tikz}
 \usepackage{todonotes}
 \usepackage{setspace}
-\setstretch{1.2}
+\setstretch{1.15}
 \newcommand{\ecn}{\author}
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
@@ -47,9 +47,9 @@
 \usepackage{graphicx}
 
 % use this package for easy referencing:
-\usepackage[capitalise,noabbrev]{cleveref} % e.g., \cref{amazing_theorem} will reference "`Theorem"' X without having to keep track of theorems, equations etc and typing "`Theorem"'
+\usepackage{url}
+\usepackage[capitalise,noabbrev]{cleveref} 
 \usepackage{overpic} % use this package for easy labelling of figures
-\usepackage{url} % use this package to reference urls, e.g., \url{https://www.maths.cam.ac.uk/postgrad/part-iii/prospective.html}
 \usepackage{comment} % use this package to comment things out \begin{comment} blah \end{comment}
 
 % FIGURES
@@ -258,12 +258,11 @@ Clearly, the algorithm above relies on the exact values of $p$ and $q$ heavily. 
 can easily break this. For example, it can add all the edges in both communities. Then, for any two 
 vertices in different communities, their expected number of common neighbors is $(n-2) q \approx qn$.
 To combat this, we might want to instead choose $r(p,q) \in (q, (p^2 + q^2)/2)$, but this can be 
-impossible, as $q$ can be larger than $(p^2 + q^2)/2$ when $p$ and $q$ are small, which is the 
-sparse regime we are interested in. Thus, the common neighbors algorithm is not robust to the
-monotone adversary.
+impossible, as $q$ can be larger than $(p^2 + q^2)/2$ when $p$ and $q$ are small. Thus, the common 
+neighbors algorithm is not robust to the monotone adversary.
 
 \subsubsection{SDP-based robust algorithm}
-Now, we consider the following SDP problem. Consider the following linear constrained set:
+Now, we consider the following SDP problem. Consider the following linearly constrained set:
 \[
 \mathcal{A} = \{\bm{X} \in \mathbb{R}^{n \times n} : \sum_{i,j \in [n]} \bm{X}_{ij} = 0\}.
 \]
@@ -478,6 +477,8 @@ Let $G \sim \mathcal{G}(n, d, \epsilon)$ and assume, for some $\delta > 0$, that
 Then, there exists $\eta = \eta(\delta) > 0$ and $d_* = d_*(\delta) > 0$ such that, for all $d \geq d_*$,
 the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfies
 \[\mathbb{P}\left(\frac{1}{n} |\langle \hat{\bm{x}}^\mathrm{SDP}(G), x \rangle| \geq \eta \right) \geq 1 - Ce^{-\sqrt{n}/C}.\]
+Furthermore, this algorithm is robust against $o(n\sqrt{d})$ edge perturbations, in the sense that
+if we modify $G$ by adding or removing $o(n\sqrt{d})$ edges to obtain a new graph $G'$, then 
 \end{theorem}
 This will be the first main result we will focus on later in this essay in \cref{sec:weak.recovery}. 
 For now, we will just give a high-level overview of the algorithm and the proof ideas.
@@ -509,24 +510,6 @@ guarantees. This mirrors the proof structure of the exact recovery under monoton
 where we also leveraged the ``bounded differences'' property of SDP, and a different property
 of the SDP value to get recovery and robustness guarantees.
 \end{remark}
-\subsection{From edge-robust to node-robust}
-As is, the algorithm above is only known to be robust against $O(n\sqrt{d})$ edge perturbations.
-However, if we want to edit $\mu n$ nodes, we can potentially change $O(n^2)$ edges, since editing
-each node can change up to $n$ edges. Thus, the algorithm above is not automatically robust against
-node perturbations.
-
-Later, Ding et al. \cite{DdHS23} came up with a way to modify the algorithm above to make it robust
-against node perturbations. Their starting point is that, after $\mu n$ node edits, there still
-remains a $(1 - \mu)n \times (1 - \mu)n$ submatrix of the adjacency matrix that is unperturbed, 
-and thus still has the push-out effect. In particular, writing the set of unperturbed nodes
-as $S$, then $\bm{A}_G^{\mathrm{cent}}{}_{[S,S]}$ has the push-out effect. 
-
-
-Thus, we want to select such a submatrix, a naive idea is to select
-the $(1 - \mu)n \times (1 - \mu)n$ submatrix with the largest SDP value, but this could be fabricated
-by the adversary. Instead, they propose to select the $(1 - \mu)n \times (1 - \mu)n$ submatrix 
-whose large submatrices all have large SDP values. This is a more robust selection procedure,
-and 
 
 \subsection{Degree heterogeneity}
 So far, we have only considered SBMs where all nodes have the same expected degree. In practice, 
@@ -535,11 +518,15 @@ where each node is given an additional expected degree parameter, and the edge p
 determined by both the community labels and the expected degree parameters of the endpoints.
 \begin{definition}[Balance, two-community, degree-corrected SBM]
 A graph $G \sim \mathcal{G}(n, p, q, \bm{\theta})$ is a degree-corrected SBM graph with $V = [n]$, 
-and uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
+and node degree parameters $\bm{\theta} \in \mathbb{R}_+^n$ satisfying 
+\[
+\sum_{i: \bm{x}_i = 1} \bm{\theta}_i = \sum_{i: \bm{x}_i = -1} \bm{\theta}_i =: g,
+\]
 if, for each pair of vertices $i, j \in [n]$, we have
 \[\mathbb{P}((i,j) \in E) = \begin{cases}
-\theta_i \theta_j p & \text{if } x_i = x_j, \\
-\theta_i \theta_j q & \text{if } x_i \neq x_j.
+\bm{\theta}_i \bm{\theta}_j p & \text{if } \bm{x}_i = \bm{x}_j, \\
+\bm{\theta}_i \bm{\theta}_j q & \text{if } \bm{x}_i \neq \bm{x}_j.
 \end{cases}\]
 \end{definition}
 This definition can be extended to multiple unbalanced communities, but for consistency with previous
@@ -547,15 +534,187 @@ sections, we will only consider the balanced, two-community case here. The resul
 are originally proven in the more general setting, but the balanced, two-community case is already
 sufficient to illustrate the main ideas.
 
+Chen et al. \cite{CLX18} developed a recovery algorithm for the DCSBM based on the SDP relaxation
+of modularity maximization \cite{Newman06}. In particular, define the following linearly
+constrained set:
+\[
+\mathcal{A} = {\bm{X} \in \mathbb{R}^{n\times n}: \bm{X}_{ij} \in [0,1], \forall i,j \in [n]}.
+\]
+Then, the SDP they considered is $\mathcal{SDP}_\mathcal{A}(\bm{A}_G - \lambda \bm{d}\bm{d}^\top)$,
+where $\bm{d}$ is the degree vector of $G$, and $\lambda$ is a tuning parameter.
 
-\subsection{Outlier nodes} 
+Define the quantities $H_\pm$ as follows:
+\[
+H_+ = p \sum_{i: \bm{x}_i = 1} \bm{\theta}_i + q \sum_{i: \bm{x}_i = -1} \bm{\theta}_i, \quad
+H_- = p \sum_{i: \bm{x}_i = -1} \bm{\theta}_i + q \sum_{i: \bm{x}_i = 1} \bm{\theta}_i.
+\]
+Then, we see that the expected degree of a node $i$ is $\bm{\theta}_i H_{\bm{x}_i}$.
+In our balanced, two-community case, we have $H_+ = H_- = g(p + q) =: H$.
 
+Chen et al. \cite{CLX18} proved the following technical result demonstrating the correlation between
+the optimizer of the above SDP and the true community labels.
+\begin{theorem}[Modularity SDP for DCSBM, Corollary 3.1 of \cite{CLX18}]
+\label{thm:CLX18}
+Suppose that $p > q > 0$, and there exists $\delta > 0$ such that the tuning parameter $\lambda$ satisfies
+\[
+\frac{q + \delta}{H^2} \leq \lambda \leq \frac{p - \delta}{H^2}.
+\]
+Then, writing $\bm{X} = \bm{x}\bm{x}^\top$, with probability $0.99 - 2(e/2)^{-2n}$, any optimizer 
+$\hat{\bm{X}}$ of $\mathcal{SDP}_\mathcal{A}(\bm{A}_G - \lambda \bm{d}\bm{d}^\top)$ satisfies
+\[
+\|\hat{\bm{X}} - \bm{X}\|_{1, \bm{\theta}} := 
+\sum_{i, j \in [n]}\bm{\theta}_i\bm{\theta}_j|\hat{\bm{X}}_{ij} - \bm{X}_{ij}| 
+\leq \frac{C}{\delta}(1 + \lambda \sigma)(\sqrt{n\sigma}+n),
+\]
+where $\sigma := 2g^2(p + q)$, and $C$ is a universal constant.
+\end{theorem}
+To very briefly explain the proof idea, we define the expected degree vector $\bm{f} = \mathbb{E}[\bm{d}]$.
+We consider $\langle \bm{A}_G - \lambda \bm{d}\bm{d}^\top, \hat{\bm{X}} - \bm{X} \rangle$, which is 
+non-negative by the optimality of $\hat{\bm{X}}$. We can decompose this quantity as follows:
+\[
+\langle \bm{A}_G - \lambda \bm{d}\bm{d}^\top, \hat{\bm{X}} - \bm{X} \rangle
+= \langle \mathbb{E}[\bm{A}_G] - \lambda \bm{f}\bm{f}^\top, \hat{\bm{X}} - \bm{X} \rangle 
++ \langle \bm{A}_G - \mathbb{E}[\bm{A}_G], \hat{\bm{X}} - \bm{X} \rangle
++ \lambda \langle \bm{f}\bm{f}^\top - \bm{d}\bm{d}^\top, \hat{\bm{X}} - \bm{X} \rangle.
+\]
+Using the conditions in the theorem, we can show that the first term is upper bounded by
+$-\delta \|\hat{\bm{X}} - \bm{X}\|_{1, \bm{\theta}}$. The second and third terms can be controlled
+using Grothendieck's inequality, which is a concentration result relying on the fact that 
+$\hat{\bm{X}} \in \mathcal{PSD}_1$. Indirectly, this is yet again using the ``bounded 
+differences'' property, this time of the inner product rather than the SDP itself. 
+Rearranging the terms, we get the desired inequality.
 
+With this technical result, we have the following recovery corollary.
+\begin{corollary}[Recovery for DCSBM, Theorem 3.2 of \cite{CLX18}]
+With all the assumptions in \cref{thm:CLX18}, there exists a clustering algorithm producing an 
+estimator $\hat{\bm{x}} \in \{\pm 1\}^n$ such that, with probability $0.99 - 2(e/2)^{-2n}$,
+\[
+\min \left\{\sum_{i: \bm{x}_i \neq \hat{\bm{x}}_i} \bm{\theta}_i, \sum_{i: \bm{x}_i = \hat{\bm{x}}_i} \bm{\theta}_i \right\} 
+\leq \frac{C}{\delta} \left(\frac{n}{g} + 2\sqrt{np}\right),
+\]
+where the minimum is taken over a possible global sign flip.
+\end{corollary}
+Note that this notion of recovery is slightly different from the ones we have seen before, since
+the error is weighted by the node degree parameters. But we see that this weighted number of 
+misclassifications is at most a fraction of $n$, which is a ``weak recovery'' style guarantee.
 
+This corollary can be interpreted as a robustness result in the sense that, we can allow for node degree
+level perturbations subject to the constraints posed in \cref{thm:CLX18}, and we still have
+``weak recovery''. However, the fact that the recovery error depends on the perturbation levels
+is not ideal, although we can impose further constraints on the perturbation levels to get a more
+explicit robustness guarantee. This in part inspires our extension of the edge-robust weak recovery 
+algorithm in \cref{sec:MS16} to the perturbed SBM in \cref{sec:perturb.robust}, where we allow
+for individual edge probabilities to be perturbed by some amount. We show that as long as the
+perturbation levels are not too large or too structured, we can still achieve weak recovery
+and the result does not depend on the perturbation levels.
 
-\section{Proof of weak recovery (Theorem \ref{thm:MS16.recovery})}
+\subsection{Other robustness results}
+In this section, we will briefly cover some other robustness results using an SDP approach in the literature.
+\subsubsection{Edge-robust weak recovery at the KS threshold}
+In \cref{sec:MS16}, we saw an algorithm that achieves weak recovery for all $d$ sufficiently large.
+However, it remained unclear whether an algorithm can achieve weak recovery at the Kesten-Stigum 
+threshold for all $d$. In 2022, Ding et al. \cite{DdNS22} built a much more complicated algorithm,
+that finally achieves weak recovery at the Kesten-Stigum threshold for all $d$, and is robust 
+against edge perturbations. 
+\begin{theorem}[Edge-robust weak recovery at KS threshold, Theorem 5.3 of \cite{DdNS22}]
+Let $G \sim \mathcal{G}(n, d, \epsilon)$ and assume that $\lambda^2 = \epsilon^2 d / 4 \geq 1 + \delta$ 
+for some $\delta > 0$. Now suppose $G^\circ$ is obtained by modifying $G$ in at most $\rho n$ edges,
+where
+\[
+\rho \leq \left(\frac{1}{\delta}\log\frac{1}{\epsilon}\right)^{-O(1/\delta)}.
+\]
+Then, there exists a polynomial-time algorithm that, with high probability, outputs $\hat{\bm{x}}$ 
+satisfying
+\[
+\mathbb{E}\langle \bm{x}, \hat{\bm{x}} \rangle^2 \geq \|\bm{x}\|^2 \cdot \delta^{O(1)}.
+\]
+\end{theorem}
+Their algorithm uses the idea of a constant length self-avoiding walk matrix that is a noisy but 
+robust version of the label matrix $\bm{x}\bm{x}^\top$. It is defined as follows: for
+each pair of vertices $i, j \in [n]$, we have
+\[
+\bm{Q}^{(s)} = \sum_{\gamma \in \mathrm{SAW}_s(i,j)} \prod_{(u,v) \in \gamma} 
+(\bm{A}_G^\mathrm{cent,trunc})_{uv},
+\]
+where $\mathrm{SAW}_s(i,j)$ is the set of all length-$s$ self-avoiding walks from $i$ to $j$, and
+$\bm{A}_G^\mathrm{cent,trunc}$ is the truncated centered adjacency matrix, where all the high degree
+nodes are truncated. Then, they look at the SDP problem of maximizing $\langle \bm{Q}^{(s)^2}, \bm{X} \rangle$ 
+subject to $\bm{X}$ being positive semidefinite plus other constraints, and finally do a rounding procedure
+on the optimizer to get the estimator $\hat{\bm{x}}$.
+
+\subsubsection{Weak recovery with outlier nodes}
+Consider the setting where we have a graph with $n + m$ nodes, where $n$ of them are generated
+from a balanced, two-community SBM, and the other $m$ nodes are outlier nodes that can be connected
+to the rest of the graph in an arbitrary way. This is a stronger perturbation model in the sense that
+we can potentially change $O(nm + m^2)$ edges.
+
+It turns out that we can still achieve weak recovery in this setting. Cai and Li \cite{CL15} 
+investigated the following SDP problem, that comes from a relaxation of the maximum likelihood estimator. 
+Writing $\bm{J}$ for the all-ones matrix,
+\begin{align*}
+\text{minimize} \quad & \langle \bm{X}, -\bm{A}_G + \alpha \bm{I} + \lambda (\bm{J} - \bm{I}) \rangle\\
+\text{subject to} \quad & \bm{X} \succeq 0, \\
+& \bm{X}_{ij} \in [0,1], \forall i,j \in [n+m].
+\end{align*}
+Their main result is that the optimizer of this SDP has a nice block structure.
+\begin{theorem}[SDP for SBM with outlier nodes, Theorem 3.1 of \cite{CL15}]
+Let $G$ be a graph with $n + m$ nodes, where $n$ of them are generated from a balanced, two-community
+SBM with parameters $p$ and $q$, and the other $m$ nodes are outlier nodes that can be connected to 
+the rest of the graph in an arbitrary way. Assume that $p > C\log n / n$, $\alpha > 3m$, and that for
+some $\delta$ satisfying
+\[
+\delta > C\left(\sqrt{\frac{\log n}{n}} + \frac{\alpha}{n} + \frac{q}{\sqrt{n}} + \frac{m}{n}
++ \frac{mp}{\alpha - 2m}\right),
+\]
+the tuning parameter $\lambda$ satisfies $q + \delta < \lambda < p - \delta$. Then, with probability
+$1 - O(n^{-1})$, up to permutation of node orders, the optimizer $\hat{\bm{X}}$ of the above SDP has
+the following block structure:
+\[
+\hat{\bm{X}} = \begin{bmatrix} 
+  \bm{J}_{n/2} & \bm{0} & \bm{Z}_1\\
+  \bm{0} & \bm{J}_{n/2} & \bm{Z}_2\\
+  \bm{Z}_1^\top & \bm{Z}_2^\top & \bm{W}
+\end{bmatrix},
+\]
+where $\bm{Z}_1$, $\bm{Z}_2$ and $\bm{W}$ are matrices of appropriate dimensions, and can be arbitrary.
+\end{theorem}
+As nice as this result is, in practice it is still hard to use it to recover the community labels 
+of the inlier nodes. Cai and Li propose to use a $k$-means clustering algorithm on the normalized
+columns of $\hat{\bm{X}}$ to get an estimator $\hat{\bm{x}}$. They were able to show the following
+weak recovery guarantee.
+\begin{theorem}[Recovery for SBM with outlier nodes, Theorem 3.2 of \cite{CL15}]
+With all the assumptions in the previous theorem, if $m < n/8$, then, with high probability, 
+the misclassification rate of $\hat{\bm{x}}$ on the $n$ inlier nodes is less than or equal to $7m/n$.
+\end{theorem}
+
+\subsubsection{Node-robust weak recovery}
+The previous setting investigated the case where $p$ scales as $C\log n / n$, which is a much denser
+regime than the one we have been considering in \cref{sec:MS16}, where $p$ scales as $d/n$ for some
+constant $d$. In fact, we can also achieve weak recovery in the sparse regime with a slightly
+different notion of node perturbations. Instead of having $m$ outlier nodes that can be connected to
+the rest of the graph, we allow for $\mu n$ node edits on the original graph, where each node edit
+can change the edges between the edited node and all the other nodes in an arbitrary way.
+
+Ding et al. \cite{DdHS23} proposed a modification of the algorithm in \cref{sec:MS16} that can
+achieve weak recovery in this setting. Note that we can potentially change $O(n^2)$ edges through 
+node edits, exceeding the $O(n\sqrt{d})$ edge perturbation robustness of the original algorithm.
+
+Recall that the main idea behind the original algorithm is to leverage the push-out effect of the
+SDP value of the centered adjacency matrix, i.e., the fact that $\mathcal{SDP}(\bm{A}_G^{\mathrm{cent}}/\sqrt{d})$
+and $\mathcal{SDP}(\bm{A}_G^{\mathrm{cent}}/\sqrt{d} - (\lambda / n)\bm{x}\bm{x}^\top)$ are bounded 
+apart, which then guarantees that the optimizer of $\mathcal{SDP}(\bm{A}_G^{\mathrm{cent}}/\sqrt{d})$
+must contain nontrivial information about $\bm{x}$. 
+
+In the algorithm of Ding et al., the key observation is that the uncorrupted vertices still form a 
+large principal submatrix of $\bm{A}_G^{\mathrm{cent}}$ on which the push-out effect holds. Since 
+this clean set is unknown, they search for a large principal submatrix whose SDP value is large and
+whose operator norm is bounded. The large SDP value provides the signal, while the operator norm bound
+ensures that deleting any small subset of nodes cannot account for the objective value. Thus the large
+SDP value must survive on the clean submatrix of this chosen submatrix, where we can then
+utilize the push-out effect to get nontrivial information about $\bm{x}$.
+
+\section{Proof of weak recovery \& edge robustness (Theorem \ref{thm:MS16.recovery})}
 \label{sec:weak.recovery}
-\todo{restructure and move main theorem to this section}
 Before we start the proof, we will make a few definitions, and show a few preliminary results.
 Let $\bm{x}$ be the label vector of $G \sim \mathcal{G}(n, d, \epsilon)$. Note that 
 $G_\mathrm{sample} \sim \mathcal{G}(n, d_\mathrm{sample}, \epsilon)$, 
@@ -640,7 +799,7 @@ Now we have the tools to obtain a lower bound on $n^{-2} \langle \bm{x}\bm{x}^\t
 \left\langle \frac{\lambda}{n^2} \bm{x}\bm{x}^\top, \bm{X}^* \right\rangle & 
 = \frac{1}{n}\left(\left\langle \frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}, \bm{X}^* \right\rangle - \left\langle \bm{E}, \bm{X}^* \right\rangle\right)\\
 & = \frac{1}{n}\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}\right) - \frac{1}{n}\left\langle \bm{E}, \bm{X}^* \right\rangle\\
-& \geq \frac{1}{n}\mathcal{SDP}(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}) - \frac{1}{n}\mathcal{SDP}(\bm{E})
+& \geq \frac{1}{n}\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}_{G_\mathrm{sample}}^{\mathrm{cent}}\right) - \frac{1}{n}\mathcal{SDP}(\bm{E})
 && \text{by optimality of SDP}\\
 & \geq \frac{1}{n}\mathcal{SDP}(\bm{B}(\lambda)) - \frac{1}{n}\mathcal{SDP}(\bm{W}) - \frac{C\log(d)}{d^{1/10}}
 && \text{by Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2}}\\
@@ -850,7 +1009,6 @@ Combining the two probability bounds, we have
 \]
 for suitable constants $C$, as desired.
 \end{proof}
-\todo{expand the following argument slightly}
 By Lemmas \ref{lem:conc} and \ref{lem:eval.size}, for all $s \in [0,1]$, we have,
 with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$,
 \[
@@ -861,14 +1019,17 @@ Note that
 \begin{align*}
 \mathbb{E}\left(\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}\right)
 &= \hat{\bm{x}}^\top \mathbb{E}\left(\bm{A}_{G_\mathrm{eval}}^\mathrm{cent}\right) \hat{\bm{x}}\\
-&= \hat{\bm{x}}^\top \frac{\epsilon d}{2n} \left(\bm{x}\bm{x}^\top - \bm{I}_n\right) \hat{\bm{x}}\\
-&= \frac{\epsilon d}{2n} (\hat{\bm{x}}^\top \bm{x})^2 - \frac{\epsilon d}{2}.
+&= \hat{\bm{x}}^\top \frac{\epsilon d_\mathrm{eval}}{2n} \left(\bm{x}\bm{x}^\top - \bm{I}_n\right) \hat{\bm{x}}\\
+&= \frac{\epsilon d_\mathrm{eval}}{2n} (\hat{\bm{x}}^\top \bm{x})^2 - \frac{\epsilon d_\mathrm{eval}}{2}\\
+&= \frac{\delta_n \epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle^2 - 1\right),
 \end{align*}
+where $d_\mathrm{eval} = \delta_n d$ is the average degree of $G_\mathrm{eval}$, and
+$\delta_n = n^{-1/2}/(1 + n^{-1/2}) = O(n^{-1/2})$ is the fraction of edges in $G_\mathrm{eval}$ among all edges in $G$.
 Thus, with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$, we have
 \begin{equation}
 \label{eqn:conc}
   \left|\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}} 
-  - \frac{\epsilon d}{2n} \langle\bm{x}, \hat{\bm{x}}\rangle^2 + \frac{\epsilon d}{2}\right| \leq s \sqrt{n}.
+  - \frac{\delta_n \epsilon d}{2n} \langle\bm{x}, \hat{\bm{x}}\rangle^2 + \frac{\delta_n \epsilon d}{2}\right| \leq s \sqrt{n}.
 \end{equation}
 This concentration result relates $\hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}$
 to the correlation $\langle\bm{x}, \hat{\bm{x}}\rangle$ with high probability.
@@ -876,35 +1037,36 @@ to the correlation $\langle\bm{x}, \hat{\bm{x}}\rangle$ with high probability.
 In particular, at the end of the previous step (\cref{eqn:correlation}), we have shown that 
 there exists some $\hat{\imath}, \hat{\jmath} \in [n]$ such that 
 $\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle \geq \frac{\Delta_2(\lambda)}{2}$.
-Then, by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}/C}$ (taking $s = 1$), we have
-\[
-  \frac{1}{n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
-  \geq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle\right)^2 
-  - \frac{\epsilon d}{2n} - \frac{1}{\sqrt{n}}
-  \geq \frac{\epsilon d}{8} \Delta_2(\lambda)^2 - \frac{\epsilon d}{2n} - \frac{1}{\sqrt{n}}
-  \geq \frac{\epsilon d}{12} \Delta_2(\lambda)^2 =: \Delta_3 (\lambda),
-\]
+Then, by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$, we have
+\begin{align*}
+  \frac{1}{n \delta_n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
+  &\geq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} \rangle\right)^2
+  - \frac{\epsilon d}{2n} - \frac{s}{\sqrt{n}\delta_n}\\
+  &\geq \frac{\epsilon d}{8} \Delta_2(\lambda)^2 - \frac{\epsilon d}{2n} - s\left(1 + \frac{1}{\sqrt{n}}\right)\\
+  &\geq \frac{\epsilon d}{12} \Delta_2(\lambda)^2 =: \Delta_3 (\lambda),
+\end{align*}
 where the last inequality follows from 
+\begin{equation}
+\label{eqn:s.choice}
+\frac{\epsilon d}{2n} + s\left(1 + \frac{1}{\sqrt{n}}\right) \leq \frac{\epsilon d}{24} \Delta_2(\lambda)^2,
+\end{equation}
+which holds for sufficiently large $n$ and sufficiently small $s$. Therefore,
 \[
-\frac{\epsilon d}{2n} + \frac{1}{\sqrt{n}} \leq \frac{\epsilon d}{24} \Delta_2(\lambda)^2,
-\]
-which holds for sufficiently large $n$. Therefore,
-\[
-\max_{i, j \in [n]} \frac{1}{n} \hat{\bm{x}}^{(i,j)}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(i,j)}
-\geq \frac{1}{n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
+\max_{i, j \in [n]} \frac{1}{n\delta_n} \hat{\bm{x}}^{(i,j)}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(i,j)}
+\geq \frac{1}{n\delta_n} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})}{}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}^{(\hat{\imath}, \hat{\jmath})} 
 \geq \Delta_3 (\lambda).
 \]
 
 On the other hand, suppose that $\hat{\bm{x}}$ has a lower correlation with $\bm{x}$, say
 $\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle \leq \frac{\Delta_2(\lambda)}{4}$, 
-then by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}/C}$, we have
-\[
-\frac{1}{n} \hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}
-\leq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle\right)^2 
-+ \frac{\epsilon d}{2n} + \frac{1}{\sqrt{n}}
-\leq \frac{\epsilon d}{32} \Delta_2(\lambda)^2 + \frac{\epsilon d}{24} \Delta_2(\lambda)^2
-< \frac{\epsilon d}{12} \Delta_2(\lambda)^2 = \Delta_3 (\lambda).
-\]
+then by the concentration result \ref{eqn:conc}, with probability at least $1 - Ce^{-\sqrt{n}s^2/C}$, we have
+\begin{align*}
+\frac{1}{n\delta_n} \hat{\bm{x}}^\top \bm{A}_{G_\mathrm{eval}}^\mathrm{cent} \hat{\bm{x}}
+&\leq \frac{\epsilon d}{2} \left(\frac{1}{n} \langle \bm{x}, \hat{\bm{x}} \rangle\right)^2 
++ \frac{\epsilon d}{2n} + s\left(1 + \frac{1}{\sqrt{n}}\right)\\
+&\leq \frac{\epsilon d}{32} \Delta_2(\lambda)^2 + \frac{\epsilon d}{24} \Delta_2(\lambda)^2\\
+&< \frac{\epsilon d}{12} \Delta_2(\lambda)^2 = \Delta_3 (\lambda).
+\end{align*}
 
 Thus, with probability at least $1 - Ce^{-\sqrt{n}/C}$, the maximizer 
 $\hat{\bm{x}}^\mathrm{SDP} = \hat{\bm{x}}^{(i^*, j^*)}$ of 
@@ -913,66 +1075,124 @@ must satisfy
 \[
 \frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \frac{\Delta_2(\lambda)}{4}.
 \]
-This completes the proof of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquare$
+This completes the proof of the weak recovery guarantee in Theorem \ref{thm:MS16.recovery}.
+
+\begin{remark}
+In the original proof of \cite{MS16}, the authors missed the $\delta_n$ scaling factor. This leads
+to them having $s/\sqrt{n}$ instead of $s(1 + 1/\sqrt{n})$ in \cref{eqn:s.choice}. Consequently, 
+this inequality only has constant margin instead of an $O(\sqrt{n})$ margin suggested by the original
+proof. Luckily, this does not affect the final conclusion.
+\end{remark}
+
 \subsection{Robustness against modifying $O(n\sqrt{d})$ edges}
+Now, we turn to proving the robustness of the algorithm against adversarial edge modifications.
+Which steps are affected by modifying $G$? Those are just the places we explicitly used
+properties of $\bm{A}_{G}^\mathrm{cent}$, and they are Lemmas \ref{lem:SDP.approx1} and \ref{lem:SDP.approx2},
+and Equation \ref{eqn:conc} in the selection step.
 
-\section{Robustness of the SDP}
+For the two lemmas, we make use of the ``bounded differences'' property of the SDP again.
+For any two graphs $G, G'$ that differ by one edge $(u,v)$, let $\bm{X}^*$ and $\bm{X}'^*$ be the optimal solutions 
+to $\mathcal{SDP}(\bm{A}_{G}^\mathrm{cent})$ and $\mathcal{SDP}(\bm{A}_{G'}^\mathrm{cent})$ respectively.
+Then, we have
+\begin{align*}
+\mathcal{SDP}(\bm{A}_{G}^\mathrm{cent}) - \mathcal{SDP}(\bm{A}_{G'}^\mathrm{cent})
+& = \langle \bm{A}_{G}^\mathrm{cent}, \bm{X}^* \rangle - \langle \bm{A}_{G'}^\mathrm{cent}, \bm{X}'^* \rangle\\
+& \leq \langle \bm{A}_{G}^\mathrm{cent}, \bm{X}^* \rangle - \langle \bm{A}_{G'}^\mathrm{cent}, \bm{X}^* \rangle\\
+& \leq |X_{uv}^*| + |X_{vu}^*| \leq 2,\\
+\end{align*}
+and similarly in the other direction. Hence, the SDP value can change by at most $2$ when we modify
+one edge, so when we modify $o(n\sqrt{d})$ edges, the SDP value can change by at most $o(n\sqrt{d})$,
+which is negligible compared to the SDP value of order $\Theta(n\sqrt{d})$ in the regime $\lambda > 1$.
+
+For the selection step, note that for any $\hat{\bm{x}} \in \{-1, 0, +1\}^n$, we have
+\[
+|\hat{\bm{x}}^\top \bm{A}_{G}^\mathrm{cent} \hat{\bm{x}} - \hat{\bm{x}}^\top \bm{A}_{G'}^\mathrm{cent} \hat{\bm{x}}|
+= |\hat{\bm{x}}^\top (\bm{A}_{G}^\mathrm{cent} - \bm{A}_{G'}^\mathrm{cent}) \hat{\bm{x}}|
+\leq 2 |\hat{\bm{x}}_u \hat{\bm{x}}_v| = 2.
+\]
+Furthermore, since $G_\mathrm{eval}$ takes only $O(1/\sqrt{n})$ of the edges of $G$, when we modify
+$o(n\sqrt{d})$ edges, with high probability, we will modify $o(\sqrt{nd})$ edges in $G_\mathrm{eval}$, 
+which will change the $\hat{\bm{x}}^\top \bm{A}_{G}^\mathrm{cent} \hat{\bm{x}}$ term by at most
+$o(\sqrt{nd})$. But the right hand side of the concentration result \ref{eqn:conc} is $s\sqrt{n}$,
+so this change can be absorbed by the concentration result.
+
+Therefore, having shown that these two steps remain valid under $o(n\sqrt{d})$ edge modifications, 
+we can conclude that the algorithm is robust against these modifications, which completes the proof 
+of Theorem \ref{thm:MS16.recovery}. \hfill $\blacksquare$
+
+\section{Robustness against perturbed SBMs}
 \label{sec:perturb.robust}
-\todo{explain}
-
-\subsection{Robustness with perturbed SBMs}
+In this section, we look at an original notion of graph perturbation, where instead of directly 
+modifying edges, we are allowed to perturb the edge probabilities by some random $h_{ij}$, 
+and we will show that the same algorithm can still achieve weak recovery.
+\subsection{Perturbed SBMs}
 We first define the following more general class of random graph models, the \emph{perturbed SBM}. 
-We will then show that the same algorithm still works for this more general class of random graph
-models, which demonstrates the robustness of the algorithm and the SDP approach in general.
+We will then show that \cref{alg:MS16} still works for this more general class of random graph
+models.
 \begin{definition}[Perturbed SBM]
 A graph $G \sim \mathcal{G}(n, d, \epsilon)$ is a balanced, two-community $h$-perturbed stochastic block model graph
 with $V = [n]$, uniformly random label vector $\bm{x} \in \{\pm 1\}^n$ satisfying $\bm{1}^\top \bm{x} = 0$,
-i.i.d. latent variables $\xi_i \sim \operatorname{Unif}([0,1])$ for $i \in [n]$,
-and perturbation function $h: [0,1]^2 \to \mathbb{R}$ satisfying $\mathbb{E}[h(\xi_i, \xi_j)] = 0$ for all $i, j \in [n]$,
+and perturbation variables $h_{ij}$ satisfying $\mathbb{E}[h_{ij}] = 0$ for all $i, j \in [n]$,
 if for each pair of vertices $i, j \in [n]$, we have
 \[p_{ij} := \mathbb{P}((i,j) \in E) = \begin{cases}
-\frac{d}{n}(1+\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i = x_j, \\
-\frac{d}{n}(1-\frac{\epsilon}{2}+h(\xi_i, \xi_j)) & \text{if } x_i \neq x_j.
+\frac{d}{n}(1+\frac{\epsilon}{2}+h_{ij}) & \text{if } x_i = x_j, \\
+\frac{d}{n}(1-\frac{\epsilon}{2}+h_{ij}) & \text{if } x_i \neq x_j.
 \end{cases}\]
-We write $\eta_{ij} = x_ix_j\epsilon/2 + h(\xi_i, \xi_j)$, and $h_{ij} = h(\xi_i, \xi_j)$ for short.
+We write $\eta_{ij} = x_ix_j\epsilon/2 + h_{ij}$ for short.
 \end{definition}
 
 We have the following weak recovery result for the perturbed SBM.
 \begin{theorem}[Weak recovery for perturbed SBM]
 \label{thm:perturbed.SBM}
 Let $G \sim \mathcal{G}(n, d, \epsilon)$ be a balanced, two-community $h$-perturbed SBM graph,
-and let $\lambda = \epsilon^2 d / 4$. Suppose there exists $\alpha > 0$, such that:
+and let $\lambda = \epsilon \sqrt{d} / 2$. Suppose there exists $\alpha > 0$, such that:
 \begin{enumerate}
   \item[(a)] the perturbation $h$ satisfies that $\|h\|_\infty \leq C d^{-2\alpha}$,
-  \item[(b)] let $\bm{H}$ be the matrix with entries $H_{ij} = h(\xi_i, \xi_j)$, 
+  \item[(b)] let $\bm{H}$ be the matrix with entries $H_{ij} = h_{ij}$, 
   then $\mathbb{E}(\|\bm{H}\|_\text{op}) \leq Cnd^{-1/2 - \alpha}$.
 \end{enumerate}
-If $\lambda > 1$, then there exists some constant 
-$\Delta_4(\lambda) > 0$, such that with probability at least $1 - Cn^{-4}$ \todo{check the probability bound},
-the estimator $\hat{\bm{x}}^\mathrm{SDP}$ returned by \cref{alg:MS16} satisfies
+If $\lambda > 1$, then there exists some constant $\Delta_4(\lambda) > 0$, such that with probability
+at least $1 - Cn^{-4}$, the estimator $\hat{\bm{x}}^\mathrm{SDP}$ returned by \cref{alg:MS16} satisfies
 \[
 \frac{1}{n} \langle \bm{x}, \hat{\bm{x}}^\mathrm{SDP} \rangle \geq \Delta_4(\lambda).
 \]
 \end{theorem}
 \begin{remark}
 We can view the theorem above as a different notion of robustness of the algorithm, where instead of
-directly editing edges, we are allowed to perturb the edge probabilities by some random $h(\xi_i, \xi_j)$.
-The theorem shows that as long as the perturbation is not too large or too structured, the algorithm
-can still achieve weak recovery.
+directly editing edges, we are allowed to perturb the edge probabilities by some random $h_{ij}$.
 \end{remark}
 
-\subsection{Comparison of the two notions of robustness}
-Note that the perturbation can lead to more than $O(n\sqrt{d})$ edge modifications in expectation.
+\subsection{Example perturbations}
+In this section, to understand the conditions in \cref{thm:perturbed.SBM}, we will discuss some
+example perturbations $h_{ij}$'s that satisfy these conditions. We will see that when the perturbation
+is sufficiently unstructured, we can have more than $O(n\sqrt{d})$ edge modifications in expectation
+and still satisfy the conditions, while when the perturbation is highly structured, the number
+of edge modifications is much smaller in order to satisfy the conditions.
 
-Roughly speaking, the operator norm bound on $\bm{H}$ in condition (b) of \cref{thm:perturbed.SBM} 
-controls the degree of structure in the perturbation. For example, if $h(\xi_i, \xi_j)$'s are i.i.d.,
-then $\mathbb{E}\|\bm{H}\|_\text{op} \sim O(\sqrt{n})$, and since $d \ll n$, this bound is easily satisfied,
-with individual edge perturbations of order $O(d^{-2\alpha})$ to satisfy the $L_\infty$ bound in condition (a).
-On the other hand, if $h(\xi_i, \xi_j)$'s are highly structured, say $\bm{H} = \bm{u}\bm{u}^\top$ 
-for some vector $\bm{u} \in \mathbb{R}^n$, then $\|\bm{H}\|_\text{op} = O(n)$, so the individual
-edge perturbations must be of order $O(d^{-1/2 - \alpha})$.
-\todo{flesh out the above argument with more citations}
-\todo{concrete example with more than $O(n\sqrt{d})$ edge modifications}
+\subsubsection{Example 1: i.i.d. perturbations}
+Suppose $h_{ij}$'s are i.i.d. uniform in $\{-Cd^{-2\alpha}, Cd^{-2\alpha}\}$ for some constant $C$.
+Then, condition (a) is satisfied by definition, and condition (b) follows from the well-known result
+on the operator norm of random matrices with i.i.d. Rademacher entries \todo{cite}, which gives
+$\mathbb{E}(\|\bm{H}\|_\text{op}) \lesssim O(\sqrt{n}d^{-2\alpha})$, which is smaller than
+$O(nd^{-1/2 - \alpha})$ for large $n$. Hence, under this perturbation, the algorithm can still 
+achieve weak recovery.
+
+Note that the expected number of edge modifications under this perturbation is
+\[\frac{d}{n}\sum_{i < j} \mathbb{E}|h_{ij}| = O\left(nd^{1 - 2\alpha}\right),\]
+which can be larger than $O(n\sqrt{d})$ when $\alpha < 1/4$. This shows that the algorithm can in fact
+be robust against more than $O(n\sqrt{d})$ edge modifications in expectation, as long as the
+perturbation is sufficiently unstructured.
+
+\subsubsection{Example 2: structured perturbations}
+Now consider the opposite case where $h_{ij}$'s are highly structured, say 
+$h_{ij} = L\sigma \mathbbm{1}_{\{i\leq k, j\leq k\}}$ for some $k \in [n]$, where $L$ is a scaling
+constant and $\sigma$ is a random variable uniform in $\{-1, +1\}$. Then, condition (a) is satisfied
+if $L \leq Cd^{-2\alpha}$. However, note that regardless of $\sigma$, $\|\bm{H}\|_\text{op} = Lk$, 
+so condition (b) requires $Lk \leq Cnd^{-1/2 - \alpha}$, which implies $L \leq C k^{-1} n d^{-1/2 - \alpha}$.
+In this case, the expected number of edge modifications is
+\[\frac{d}{n}\sum_{i < j} \mathbb{E}|h_{ij}| = O\left(kd^{1/2 - \alpha}\right),\]
+usually much smaller than $O(n\sqrt{d})$ when $k \ll n$. This shows that when the perturbation is highly
+structured, the algorithm can only be robust against much fewer edge modifications in expectation.
 
 \section{Proof of weak recovery for perturbed SBMs (\cref{thm:perturbed.SBM})}
 \label{sec:sdp.approx}
@@ -1134,13 +1354,14 @@ we have
 \sum_{i,j \in [n]} \mathbb{E} \left|\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G_{ij}}\right|^3 
 \leq \frac{1}{d^{3/2}}\sum_{i,j \in [n]}\frac{d}{n}(2 + \eta_{ij})
 \leq \frac{2n}{\sqrt{d}} + \frac{1}{n\sqrt{d}}\sum_{i,j \in [n]} h_{ij}
-< \frac{3n}{\sqrt{d}}.
+< \frac{3n}{\sqrt{d}},
 \]
-\todo{finish the argument above}
+when $n$ is sufficiently large.
 
 Next, we bound the third moments of the entries of $\bm{D}$. Note that if $X = a + bZ$, where
 $Z \sim \mathcal{N}(0,1)$, then $\mathbb{E}[|X|^3] \leq 4(|a|^3 + |b|^3)$. Since
 $\bm{D}_{ij} = -p_{ij} / \sqrt{d} + \sqrt{p_{ij}(1-p_{ij})/d} Z_{ij}$, where $Z_{ij} \sim \mathcal{N}(0,1)$, we have
+\todo{check Dij}
 \begin{align*}
 \sum_{i,j \in [n]} \mathbb{E} \left|\bm{D}_{ij}\right|^3 
 &\leq 4\sum_{i,j \in [n]} \left(\left(\frac{p_{ij}}{\sqrt{d}}\right)^3 
@@ -1151,7 +1372,6 @@ $\bm{D}_{ij} = -p_{ij} / \sqrt{d} + \sqrt{p_{ij}(1-p_{ij})/d} Z_{ij}$, where $Z_
 < \frac{n}{\sqrt{d}},
 \end{align*}
 where we used the fact that $|\eta_{ij}| \leq 1$ and $d \ll n$.
-\todo{clean up argument}
 
 Finally, Montanari and Sen proved that $\| \partial_{ij}^3 F\|_\infty \leq 6\beta^2$ 
 for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
@@ -1159,7 +1379,6 @@ for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
 \left|\mathbb{E} \left( F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d}) - F(\bm{D})\right)\right|
 \leq \frac{Cn\beta^2}{\sqrt{d}}
 \]
-\todo{calc C}
 
 \subsection{Coupling of Gaussian Matrices}
 For simplicity, we write $\bm{B}(\lambda) = \bm{B}$. To bound the difference between $F(\bm{D})$ 
@@ -1348,6 +1567,27 @@ algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \
 
 \section{Conclusion and Future Directions}
 \label{sec:conclusion}
+In this essay, we studied several notions of robustness in community detection, with a particular
+focus on SDP-based algorithms for weak recovery in sparse stochastic block models. We first reviewed
+existing robustness models, including monotone adversaries, edge perturbations, node perturbations,
+and degree heterogeneity. We then focused on the algorithm of Montanari and Sen, whose SDP relaxation
+achieves weak recovery almost at the Kesten-Stigum threshold. The main contribution of this essay was
+to show that the same algorithm is robust under a more general perturbation model, where the edge
+probabilities themselves are allowed to fluctuate by a matrix $h$. The resulting condition is not
+simply a bound on the number of modified edges: rather, it depends on both the entrywise size of the
+perturbation and its operator norm. This distinction captures the key phenomenon that unstructured
+perturbations can cancel spectrally and hence be much less harmful than structured, low-rank
+perturbations of with similar expected edge modification counts.
+
+There are several natural directions for further work. First, it would be interesting to weaken the
+entrywise condition on $h$, since the present theorem excludes some perturbations that may still
+be benign after applying concentration bounds. Second, one could ask whether analogous $h$-style
+robustness results hold for other community detection algorithms, especially those not based on the
+specific SDP interpolation framework used here. Finally, it would be valuable to understand whether
+weak recovery guarantees for degree-corrected stochastic block models can be made independent of the
+node degree parameters after imposing additional constraints, and whether this gives a more intrinsic 
+bridge between degree heterogeneity and node corruption, perhaps mirroring the relationship between
+$h$-style perturbations and edge corruption.
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %                                                                             
@@ -1362,6 +1602,7 @@ algorithm still works for the perturbed SBM, proving \cref{thm:perturbed.SBM}. \
 % An explanation of how to do this can be found at https://www.overleaf.com/learn/latex/Bibliography_management_with_bibtex.
 % When submitting the essay, you must upload your .bib file alongside this .tex file.
 
+\newpage
 \bibliographystyle{alpha}
 \bibliography{references}
 
