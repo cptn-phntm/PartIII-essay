@@ -478,8 +478,7 @@ Then, there exists $\eta = \eta(\delta) > 0$ and $d_* = d_*(\delta) > 0$ such th
 the output of Algorithm \ref{alg:MS16}, $\hat{\bm{x}}^\mathrm{SDP}(G)$, satisfies
 \[\mathbb{P}\left(\frac{1}{n} |\langle \hat{\bm{x}}^\mathrm{SDP}(G), x \rangle| \geq \eta \right) \geq 1 - Ce^{-\sqrt{n}/C}.\]
 Furthermore, this algorithm is robust against $o(n\sqrt{d})$ edge perturbations, in the sense that
-if we modify $G$ by adding or removing $o(n\sqrt{d})$ edges to obtain a new graph $G'$, we can still
-achieve weak recovery.
+if we modify $G$ by adding or removing $o(n\sqrt{d})$ edges to obtain a new graph $G'$, then 
 \end{theorem}
 This will be the first main result we will focus on later in this essay in \cref{sec:weak.recovery}. 
 For now, we will just give a high-level overview of the algorithm and the proof ideas.
@@ -1266,14 +1265,14 @@ so subtract by $\mathcal{SDP}(\bm{M})$ on every term and flipping signs, we get
 \]
 \end{remark}
 \begin{remark}
-Clearly, $\bm{A}^\mathrm{cent}_{G}$ and $\bm{B}(\lambda)$ are symmetric matrices. 
+Clearly, $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ are symmetric matrices. 
 Montanari and Sen showed that with probability at least $1 - Ce^{-n/C}$, we have
 (Theorem 8 equation 47 of \cite{MS16})
 \[
-\max \left\{\frac{1}{n\sqrt{d}}\mathcal{OPT}_k(\pm \bm{A}^\mathrm{cent}_{G}), 
+\max \left\{\frac{1}{n\sqrt{d}}\mathcal{OPT}_k(\pm \bm{A}^\mathrm{cen}_{G}), 
 \frac{1}{n}\mathcal{OPT}_k(\pm \bm{B}(\lambda))\right\} \leq C,
 \]
-so in fact, for $\bm{M} = \bm{A}^\mathrm{cent}_{G}$ or $\bm{B}(\lambda)$, with probability 
+so in fact, for $\bm{M} = \bm{A}^\mathrm{cen}_{G}$ or $\bm{B}(\lambda)$, with probability 
 at least $1 - Ce^{-n/C}$, we have
 \[
 \left|\mathcal{SDP}(\bm{M}) - \mathcal{OPT}_k(\bm{M})\right| \leq \frac{C}{k}.
@@ -1303,15 +1302,15 @@ We can optimize the bound above over $\epsilon$ to obtain that when $\epsilon^*=
 \end{remark}
 \begin{remark}
 In particular, we can show that (Lemma A.3 of \cite{MS16}) for any graph $G$ with bounded degree, we have 
-$\|\bm{A}^\mathrm{cent}_{G}\|_{\infty \to 2} \leq Cd\sqrt{n}$, and for any $\lambda \in \mathbb{R}$, 
+$\|\bm{A}^\mathrm{cen}_{G}\|_{\infty \to 2} \leq Cd\sqrt{n}$, and for any $\lambda \in \mathbb{R}$, 
 we have $\|\bm{B}(\lambda)\|_{\infty \to 2} \leq (C + |\lambda|)\sqrt{n}$. so the above bound 
-applies to $\bm{A}^\mathrm{cent}_{G}$ and $\bm{B}(\lambda)$ with $L = Cd$ and $L = C + |\lambda|$, respectively.
+applies to $\bm{A}^\mathrm{cen}_{G}$ and $\bm{B}(\lambda)$ with $L = Cd$ and $L = C + |\lambda|$, respectively.
 \end{remark}
 
 They further showed the following concentration result for $\Phi$.
 \begin{theorem}[Concentration of $\Phi$, Lemma A.1 of \cite{MS16}]
 \label{thm:Phi.conc}
-If $\bm{M} \in \mathbb{R}^{n \times n}$ is $\bm{A}^\mathrm{cent}_{G}$ for some graph $G$ with bounded degree,
+If $\bm{M} \in \mathbb{R}^{n \times n}$ is $\bm{A}^\mathrm{cen}_{G}$ for some graph $G$ with bounded degree,
 or $\bm{B}(\lambda)$ for some $\lambda \in \mathbb{R}$, then for any $\beta > 0$ and $k \leq n$, 
 for all $t>0$, we have
 \[
@@ -1320,9 +1319,9 @@ for all $t>0$, we have
 \]
 \end{theorem}
 
-Therefore, the problem of approximating $\mathcal{SDP}(\bm{A}^\mathrm{cent}_{G})$ with
+Therefore, the problem of approximating $\mathcal{SDP}(\bm{A}^\mathrm{cen}_{G})$ with
 $\mathcal{SDP}(\bm{B}(\lambda))$ can be reduced to the problem of interpolating between
-$\mathbb{E}(\Phi(\beta, k; \bm{A}^\mathrm{cent}_{G}))$ and $\mathbb{E}(\Phi(\beta, k; \bm{B}(\lambda)))$.
+$\mathbb{E}(\Phi(\beta, k; \bm{A}^\mathrm{cen}_{G}))$ and $\mathbb{E}(\Phi(\beta, k; \bm{B}(\lambda)))$.
 We will defer the details of the interpolation step to the next section, where we examine a more general
 family of random graph models, the perturbed SBMs. As it turns out, the interpolation step will be the
 most central step in extending the algorithm to the new setting.
@@ -1343,17 +1342,17 @@ for all $i \in [N]$. Then, we have
 \]
 \end{lemma}
 Thus, we construct a matrix $\bm{D}$, such that $\bm{D}$ is a Gaussian matrix with first and second 
-moments matching those of $\bm{A}^\mathrm{cent}_{G} / \sqrt{d}$. Then, apply the above lemma to 
-$F(\bm{M}) := \Phi(\beta, k; \bm{M})$ with $\bm{X} = \bm{A}^\mathrm{cent}_{G} / \sqrt{d}$ and 
-$\bm{Z} = \bm{D}$, we can bound the difference between $F(\bm{A}^\mathrm{cent}_{G} / \sqrt{d})$ and $F(\bm{D})$.
+moments matching those of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Then, apply the above lemma to 
+$F(\bm{M}) := \Phi(\beta, k; \bm{M})$ with $\bm{X} = \bm{A}^\mathrm{cen}_{G} / \sqrt{d}$ and 
+$\bm{Z} = \bm{D}$, we can bound the difference between $F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d})$ and $F(\bm{D})$.
 
-First, we bound the third moments of the entries of $\bm{A}^\mathrm{cent}_{G} / \sqrt{d}$. Note that if 
+First, we bound the third moments of the entries of $\bm{A}^\mathrm{cen}_{G} / \sqrt{d}$. Note that if 
 $X \sim \operatorname{Ber}(p)$, then for $a \in [0,1]$, $\mathbb{E}[|X - a|^3] 
-= (1-p)a^3 + p(1-a)^3 \leq a + p$. Since $\bm{A}^\mathrm{cent}_{G_{ij}} = \bm{A}_{G_{ij}} - d/n$, and
+= (1-p)a^3 + p(1-a)^3 \leq a + p$. Since $\bm{A}^\mathrm{cen}_{G_{ij}} = \bm{A}_{G_{ij}} - d/n$, and
 $\bm{A}_{G_{ij}} \sim \operatorname{Ber}\left(\frac{d}{n}(1 + \eta_{ij})\right)$,
 we have 
 \[
-\sum_{i,j \in [n]} \mathbb{E} \left|\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G_{ij}}\right|^3 
+\sum_{i,j \in [n]} \mathbb{E} \left|\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G_{ij}}\right|^3 
 \leq \frac{1}{d^{3/2}}\sum_{i,j \in [n]}\frac{d}{n}(2 + \eta_{ij})
 \leq \frac{2n}{\sqrt{d}} + \frac{1}{n\sqrt{d}}\sum_{i,j \in [n]} h_{ij}
 < \frac{3n}{\sqrt{d}},
@@ -1377,7 +1376,7 @@ where we used the fact that $|\eta_{ij}| \leq 1$ and $d \ll n$.
 Finally, Montanari and Sen proved that $\| \partial_{ij}^3 F\|_\infty \leq 6\beta^2$ 
 for all $i, j \in [n]$ (line 112 of \cite{MS16}). Combining, we obtain
 \[
-\left|\mathbb{E} \left( F(\bm{A}^\mathrm{cent}_{G} / \sqrt{d}) - F(\bm{D})\right)\right|
+\left|\mathbb{E} \left( F(\bm{A}^\mathrm{cen}_{G} / \sqrt{d}) - F(\bm{D})\right)\right|
 \leq \frac{Cn\beta^2}{\sqrt{d}}
 \]
 
@@ -1531,7 +1530,7 @@ Therefore, we have
 \end{align*}
 Combining with the bound from the Lindeberg interpolation step, we have
 \[
-\frac{1}{n} \left| \mathbb{E}F\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right) 
+\frac{1}{n} \left| \mathbb{E}F\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right) 
 - \mathbb{E}F(\bm{B})\right| \leq C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right).
 \]
 
@@ -1540,19 +1539,19 @@ With the above bound between $\mathbb{E}F$ values, we first use the concentratio
 \cref{thm:Phi.conc} to show that taking $t = O(d^{-1/2})$, with probability at least $1 - Ce^{-n/C}$,
 we have
 \[
-\frac{1}{n} \left| \Phi\left(\beta, k; \frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right) 
+\frac{1}{n} \left| \Phi\left(\beta, k; \frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right) 
 - \Phi(\beta, k; \bm{B})\right| \leq C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right).
 \]
 Then, \cref{thm:OPT.Phi} allows us to relate $\Phi$ and $\mathcal{OPT}_k$, which gives
 \begin{align*}
-\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right)
+\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
 - \mathcal{OPT}_k(\bm{B})\right| &\leq \frac{k}{\beta} \log \frac{C\beta d}{\sqrt{k}} 
 + \frac{k}{\beta} \log \frac{C\beta \lambda}{\sqrt{k}} + C\left(\frac{\beta^2}{\sqrt{d}} + d^{-\alpha}\right)\\
 &\leq \frac{k}{\beta} \log \frac{C\beta d\lambda}{k} + C\frac{\beta^2}{\sqrt{d}} + C d^{-\alpha}.
 \end{align*}
 Note that this holds for all $\beta \in \mathbb{R}$, so taking $\beta = d^{1/6} k^{1/3}$, we have
 \begin{align*}
-\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right)
+\frac{1}{n} \left|\mathcal{OPT}_k\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
 - \mathcal{OPT}_k(\bm{B})\right| &\leq C d^{-1/6} k^{2/3} \log(Cd^{7/6} k^{-2/3} \lambda) + C d^{-\alpha}\\
 &\leq C d^{-1/6} k^{2/3} \log(Cd^{7/6} \lambda) + C d^{-\alpha},
 \end{align*}
@@ -1560,12 +1559,12 @@ where we dropped the $k^{-2/3}$ term in the log since $k$ is a positive integer.
 
 Finally, \cref{thm:SDP.OPT} links $\mathcal{OPT}_k$ and $\mathcal{SDP}$, which gives
 \[
-\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right)
+\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
 - \mathcal{SDP}(\bm{B})\right| \leq \frac{C}{k} + C d^{-1/6} k^{2/3} \log(Cd^{7/6} \lambda) + C d^{-\alpha}.
 \]
 Taking $k = d^{1/10}$, we have
 \[
-\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cent}_{G}\right)
+\frac{1}{n} \left|\mathcal{SDP}\left(\frac{1}{\sqrt{d}}\bm{A}^\mathrm{cen}_{G}\right)
 - \mathcal{SDP}(\bm{B})\right| \leq C \frac{\log(Cd^{7/6}\lambda)}{d^{1/10}} + C d^{-\alpha}.
 \]
 Crucially, the above bound goes to zero as $d \to \infty$, which allows us to conclude that the same

@@ -1,15 +1,15 @@
 # Fdb version 4
-["bibtex partiii_essay"] 1778127911.90156 "partiii_essay.aux" "partiii_essay.bbl" "partiii_essay" 1778160695.74797 0
+["bibtex 060-E746C"] 1778128095.4875 "060-E746C.aux" "060-E746C.bbl" "060-E746C" 1778128096.13958 0
   "./references.bib" 1778127911.81349 3407 a8b7c673807cd19aec28f7418c4cdc22 ""
   "/usr/local/texlive/2026/texmf-dist/bibtex/bst/base/alpha.bst" 1292289607 23907 a5f93555796fb564b924339521f10a7c ""
-  "partiii_essay.aux" 1778160695.58845 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
+  "060-E746C.aux" 1778128095.95437 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
   (generated)
-  "partiii_essay.bbl"
-  "partiii_essay.blg"
+  "060-E746C.bbl"
+  "060-E746C.blg"
   (rewritten before read)
-["pdflatex"] 1778160695.16172 "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" "partiii_essay.pdf" "partiii_essay" 1778160695.74807 0
+["pdflatex"] 1778128095.54717 "/Users/jerry/Work/Cambridge/Part III Essay/tex/submission/060-E746C.tex" "060-E746C.pdf" "060-E746C" 1778128096.13968 0
   "/Users/jerry/Library/texlive/2026/texmf-var/fonts/pk/ljfour/public/bbm/bbm10.657pk" 1776385807.3993 7808 af288bf8d935719c3f8688e7f7fcc7a5 ""
-  "/Users/jerry/Work/Cambridge/Part III Essay/tex/partiii_essay.tex" 1778160695.07914 96375 a11315c3c02f74a0de0558f6474413b0 ""
+  "/Users/jerry/Work/Cambridge/Part III Essay/tex/submission/060-E746C.tex" 1778128094.18168 96323 6007b1a5779a0c6e71f70f493f3a48fa ""
   "/usr/local/texlive/2026/texmf-dist/fonts/map/fontname/texfonts.map" 1577235249 3524 cb3e574dea2d1052e39280babc910dc8 ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy6.tfm" 1246382020 1124 14ccf5552bc7f77ca02a8a402bea8bfb ""
   "/usr/local/texlive/2026/texmf-dist/fonts/tfm/public/amsfonts/cmextra/cmbsy8.tfm" 1246382020 1120 200be8b775682cdf80acad4be5ef57e4 ""
@@ -193,13 +193,13 @@
   "/usr/local/texlive/2026/texmf-var/fonts/map/pdftex/updmap/pdftex.map" 1776279145 5573038 b99aad5e4898a9034e953632f940512b ""
   "/usr/local/texlive/2026/texmf-var/web2c/pdftex/pdflatex.fmt" 1776279137 3636772 a727b2fbe76c0a23d7876f8d32aa8c56 ""
   "/usr/local/texlive/2026/texmf.cnf" 1774209515 577 648cd9f92f9c0eac486f4c71c85cfbbe ""
-  "partiii_essay.aux" 1778160695.58845 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
-  "partiii_essay.bbl" 1778127911.96502 2792 fbabbe0802452d2edcbc185ba02f7d95 "bibtex partiii_essay"
-  "partiii_essay.tex" 1778160695.07914 96375 a11315c3c02f74a0de0558f6474413b0 ""
-  "partiii_essay.toc" 1778160695.5893 2726 cd27ac6b5abbadaef4cfeca815c0437a "pdflatex"
+  "060-E746C.aux" 1778128095.95437 9489 ce740d781ce8b5e4fd8f07bae4cd6ecf "pdflatex"
+  "060-E746C.bbl" 1778128095.54518 2792 fbabbe0802452d2edcbc185ba02f7d95 "bibtex 060-E746C"
+  "060-E746C.tex" 1778128094.18168 96323 6007b1a5779a0c6e71f70f493f3a48fa ""
+  "060-E746C.toc" 1778128095.95526 2726 cd27ac6b5abbadaef4cfeca815c0437a "pdflatex"
   (generated)
-  "partiii_essay.aux"
-  "partiii_essay.log"
-  "partiii_essay.pdf"
-  "partiii_essay.toc"
+  "060-E746C.aux"
+  "060-E746C.log"
+  "060-E746C.pdf"
+  "060-E746C.toc"
   (rewritten before read)
